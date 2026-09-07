@@ -3,7 +3,7 @@
 A static dashboard visualizing ambient temperature, humidity, and water temperature
 from the Thangreens greenhouse sensors (`West GH` and `East GH`).
 
-Live site: **https://<your-username>.github.io/stok-dashboard/**
+[Live site: (https://darshan-sarode.github.io/Thangreens-Dashboard/]
 
 ## Files
 
@@ -21,8 +21,7 @@ all loaded from CDNs, no build step or package manager required.
 ## Regenerating the data
 
 The dashboard is served as plain static files, so the data bundle is committed.
-To refresh it from the source sensor CSVs (located in
-`C:\Users\darsh\Downloads\Thangreens\data\`):
+To refresh it from the source sensor CSVs 
 
 ```bash
 node build-data.js
@@ -50,4 +49,4 @@ stays responsive (max 2000 points per series).
 4. Visit `https://<your-username>.github.io/stok-dashboard/` after a minute or two.
 
 > Internal links and data files use relative paths, so the site works correctly
-> under the `/stok-dashboard/` subpath with no config changes.
+> under the `/thangreens-dashboard/` subpath with no config changes.
