@@ -1,0 +1,1926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thangreens Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.1/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/2.2.0/chartjs-plugin-zoom.min.js"></script>
+<script src="data.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700&display=swap">
+<style>
+/* ── Reset & Base ─────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  color-scheme: light;
+  --surface-0: #f2f6f3;              /* report --bg */
+  --surface-1: #ffffff;              /* report --surface */
+  --surface-2: #e9efea;              /* report --surface-2 */
+  --text-primary: #101915;           /* report --ink */
+  --text-secondary: #45534e;         /* report --ink-2 */
+  --text-muted: #7c8a84;             /* report --ink-3 */
+  --border: #d9e1db;                 /* report --line */
+  --accent: #0d7377;                 /* report accent */
+  --accent-light: #14a3a8;           /* report --accent-2 */
+  --accent-pale: rgba(13,115,119,0.08);
+  --danger: #d03b3b;                 /* report --bad */
+  --danger-pale: rgba(208,59,59,0.10);
+  --warning: #d97706;                /* report --warn */
+  --warning-pale: rgba(217,119,6,0.12);
+  --success: #1baf7a;                /* report --good */
+  --success-pale: rgba(27,175,122,0.12);
+  /* Chart series — report palette */
+  --series-temp: #2a78d6;
+  --series-temp-dark: #4f90e0;
+  --series-humidity: #eb6834;
+  --series-humidity-dark: #d95926;
+  --series-water: #e34948;
+  --series-water-dark: #ef6b6b;
+  /* Chart chrome */
+  --chart-surface: #ffffff;
+  --chart-grid: #e3e9e4;
+  --chart-axis: #7c8a84;
+  --chart-text: #5d6b67;
+  --chart-text-muted: #7c8a84;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --shadow-sm: 0 1px 2px rgba(16,25,21,0.05), 0 8px 24px rgba(16,25,21,0.06);
+  --shadow-md: 0 2px 4px rgba(16,25,21,0.06), 0 12px 32px rgba(16,25,21,0.10);
+  --shadow-lg: 0 1px 2px rgba(16,25,21,0.05), 0 24px 60px rgba(16,25,21,0.16);
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;      /* report --font-body */
+  --font-display: 'Bricolage Grotesque', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: ui-monospace, 'Cascadia Mono', 'Segoe UI Mono', Consolas, monospace;
+  font-size: 16px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --surface-0: #0c110f;
+    --surface-1: #141a17;
+    --surface-2: #1c2420;
+    --text-primary: #e7ede9;
+    --text-secondary: #a7b4ae;
+    --text-muted: #7c8a84;
+    --border: #2a342e;
+    --accent: #14c2b4;
+    --accent-light: #2dd4bf;
+    --accent-pale: rgba(20,194,180,0.14);
+    --danger: #ef7b7b;
+    --danger-pale: rgba(239,123,123,0.12);
+    --warning: #fbbf24;
+    --warning-pale: rgba(251,191,36,0.12);
+    --success: #2fce94;
+    --success-pale: rgba(47,206,148,0.12);
+    --series-temp: #4f90e0;
+    --series-humidity: #d95926;
+    --series-water: #ef6b6b;
+    --chart-surface: #141a17;
+    --chart-grid: #25302a;
+    --chart-axis: #89968f;
+    --chart-text: #89968f;
+    --chart-text-muted: #89968f;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.35), 0 8px 24px rgba(0,0,0,0.4);
+    --shadow-md: 0 4px 14px rgba(0,0,0,0.4), 0 14px 40px rgba(0,0,0,0.45);
+    --shadow-lg: 0 10px 30px rgba(0,0,0,0.45), 0 24px 70px rgba(0,0,0,0.5);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --surface-0: #0c110f;
+  --surface-1: #141a17;
+  --surface-2: #1c2420;
+  --text-primary: #e7ede9;
+  --text-secondary: #a7b4ae;
+  --text-muted: #7c8a84;
+  --border: #2a342e;
+  --accent: #14c2b4;
+  --accent-light: #2dd4bf;
+  --accent-pale: rgba(20,194,180,0.14);
+  --danger: #ef7b7b;
+  --danger-pale: rgba(239,123,123,0.12);
+  --warning: #fbbf24;
+  --warning-pale: rgba(251,191,36,0.12);
+  --success: #2fce94;
+  --success-pale: rgba(47,206,148,0.12);
+  --series-temp: #4f90e0;
+  --series-humidity: #d95926;
+  --series-water: #ef6b6b;
+  --chart-surface: #141a17;
+  --chart-grid: #25302a;
+  --chart-axis: #89968f;
+  --chart-text: #89968f;
+  --chart-text-muted: #89968f;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.35), 0 8px 24px rgba(0,0,0,0.4);
+  --shadow-md: 0 4px 14px rgba(0,0,0,0.4), 0 14px 40px rgba(0,0,0,0.45);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,0.45), 0 24px 70px rgba(0,0,0,0.5);
+}
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font);
+  background: var(--surface-0);
+  color: var(--text-primary);
+  line-height: 1.55;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, h4 { font-family: var(--font-display); line-height: 1.15; font-weight: 600; text-wrap: balance; }
+.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.eyebrow {
+  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 0.9rem;
+}
+button { font-family: var(--font); cursor: pointer; }
+input[type="radio"] { accent-color: var(--accent); width: 18px; height: 18px; }
+a { color: var(--accent); text-decoration: none; }
+
+/* ── Header ────────────────────────────────────────────────────────── */
+.header {
+  background: linear-gradient(135deg, #0d4f52 0%, #0d7377 50%, #14a3a8 100%);
+  color: #fff;
+  text-align: center;
+  padding: 2.5rem 1rem 2rem;
+  position: relative;
+  overflow: hidden;
+}
+.header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.header h1 {
+  font-size: clamp(1.8rem, 5vw, 2.8rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  position: relative;
+  margin-bottom: 0.25rem;
+}
+.header .subtitle {
+  font-size: clamp(0.85rem, 2vw, 1.05rem);
+  opacity: 0.85;
+  font-weight: 400;
+  position: relative;
+}
+.header .clock {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  opacity: 0.7;
+  margin-top: 0.5rem;
+  font-variant-numeric: tabular-nums;
+  position: relative;
+}
+
+/* ── Container ─────────────────────────────────────────────────────── */
+.container { max-width: 1200px; margin: 0 auto; padding: 0 clamp(16px, 4vw, 40px) 3rem; }
+
+/* ── Upload Section ────────────────────────────────────────────────── */
+.upload-section {
+  padding: 2rem 0;
+  text-align: center;
+}
+.upload-zone {
+  border: 2px dashed var(--chart-axis);
+  border-radius: var(--radius);
+  padding: 3rem 2rem;
+  background: var(--surface-1);
+  transition: border-color 0.2s, background 0.2s;
+  cursor: pointer;
+  max-width: 600px;
+  margin: 0 auto;
+}
+.upload-zone:hover, .upload-zone.drag-over {
+  border-color: var(--accent);
+  background: var(--accent-pale);
+}
+.upload-zone .icon { font-size: 3rem; margin-bottom: 0.5rem; display: block; }
+.upload-zone .label { font-size: 1.15rem; font-weight: 600; color: var(--text-primary); }
+.upload-zone .hint { font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem; }
+.upload-zone input[type="file"] { display: none; }
+
+/* File list after selection */
+.file-list {
+  max-width: 600px;
+  margin: 1.5rem auto 0;
+  text-align: left;
+}
+.file-list-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.85rem;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+.file-list-item .file-icon { font-size: 1.2rem; flex-shrink: 0; }
+.file-list-item .file-name { flex: 1; font-weight: 500; word-break: break-all; }
+.file-list-item .file-size { color: var(--text-muted); font-size: 0.8rem; white-space: nowrap; }
+.file-list-item .file-remove {
+  background: none;
+  border: none;
+  color: var(--danger);
+  font-size: 1.2rem;
+  padding: 0 0.25rem;
+  line-height: 1;
+}
+.file-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-top: 1.25rem;
+}
+
+/* ── Buttons ───────────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.5rem;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+}
+.btn:active { transform: scale(0.97); }
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: var(--shadow-sm);
+}
+.btn-primary:hover { background: var(--accent-light); box-shadow: var(--shadow-md); }
+.btn-secondary {
+  background: var(--surface-2);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+.btn-secondary:hover { background: var(--border); }
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-danger:hover { opacity: 0.9; }
+.btn-sm { padding: 0.45rem 1rem; font-size: 0.85rem; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ── Modal Overlay ─────────────────────────────────────────────────── */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+}
+.modal-overlay.active { display: flex; }
+.modal {
+  background: var(--surface-1);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 640px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 2rem;
+}
+.modal h2 { font-size: 1.3rem; margin-bottom: 0.25rem; }
+.modal .modal-subtitle { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem; }
+.modal .progress-bar-wrap {
+  background: var(--surface-2);
+  border-radius: 999px;
+  height: 8px;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+}
+.modal .progress-bar-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+/* Questionnaire */
+.question-group { margin-bottom: 1.5rem; }
+.question-group label.group-label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+}
+.radio-group { display: flex; flex-direction: column; gap: 0.5rem; }
+.radio-option {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  font-size: 0.9rem;
+}
+.radio-option:hover { border-color: var(--accent); background: var(--accent-pale); }
+.radio-option.selected { border-color: var(--accent); background: var(--accent-pale); }
+.radio-option input[type="radio"] { margin: 0; }
+
+/* File preview table */
+.preview-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+  margin-top: 0.5rem;
+}
+.preview-table th, .preview-table td {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--border);
+  text-align: left;
+  white-space: nowrap;
+}
+.preview-table th {
+  background: var(--surface-2);
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+}
+.modal-actions { display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem; }
+
+/* ── Stats Cards ───────────────────────────────────────────────────── */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+.stat-card {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  box-shadow: var(--shadow-sm);
+  text-align: center;
+  transition: box-shadow 0.2s;
+}
+.stat-card:hover { box-shadow: var(--shadow-md); }
+.stat-card .stat-value {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+  line-height: 1.15;
+}
+.stat-card .stat-label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: 0.45rem;
+  font-weight: 600;
+}
+.stat-card.warn .stat-value { color: var(--warning); }
+.stat-card.danger .stat-value { color: var(--danger); }
+
+/* ── Filter bar (date range + zoom controls) ───────────────────────── */
+.filter-bar {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem;
+  padding: 0.7rem 1rem;
+  background: var(--surface-1); border: 1px solid var(--border);
+  border-radius: var(--radius); box-shadow: var(--shadow-sm);
+  margin: 1.25rem 0 0;
+}
+.filter-title { font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); white-space: nowrap; }
+.filter-presets { display: inline-flex; gap: 0.25rem; flex-wrap: wrap; }
+.fb-btn {
+  border: 1px solid var(--border); background: var(--surface-2); color: var(--text-secondary);
+  padding: 0.35rem 0.8rem; border-radius: var(--radius-sm);
+  font-size: 0.82rem; font-weight: 600; cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.fb-btn:hover { border-color: var(--accent); color: var(--accent); }
+.fb-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.fb-date {
+  border: 1px solid var(--border); background: var(--surface-0); color: var(--text-primary);
+  padding: 0.32rem 0.5rem; border-radius: var(--radius-sm); font-size: 0.82rem;
+  font-family: var(--font-mono);
+}
+.fb-sep { color: var(--text-muted); }
+.fb-reset { margin-left: auto; }
+.fb-reset:hover { border-color: var(--danger); color: var(--danger); }
+.range-caption { font-size: 0.78rem; color: var(--text-muted); margin: 0.5rem 0.25rem 0; }
+.chart-hint { font-family: var(--font-mono); font-weight: 400; color: var(--text-muted); font-size: 0.74rem; }
+
+/* ── Validation Report ─────────────────────────────────────────────── */
+.validation-report {
+  margin: 1.5rem 0;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface-1);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+.validation-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.2s;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+}
+.validation-header:hover { background: var(--surface-2); }
+.validation-header .badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.badge-warn { background: var(--warning-pale); color: var(--warning); }
+.badge-danger { background: var(--danger-pale); color: var(--danger); }
+.badge-ok { background: var(--success-pale); color: var(--success); }
+.validation-header .chevron {
+  margin-left: auto;
+  transition: transform 0.2s;
+  color: var(--text-muted);
+}
+.validation-header.open .chevron { transform: rotate(180deg); }
+.validation-body {
+  display: none;
+  padding: 0 1.25rem 1rem;
+}
+.validation-body.open { display: block; }
+.validation-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+}
+.validation-table th, .validation-table td {
+  padding: 0.45rem 0.65rem;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+.validation-table th {
+  background: var(--surface-2);
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+  position: sticky;
+  top: 0;
+}
+.validation-table-wrap { max-height: 300px; overflow-y: auto; }
+.validation-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0.85rem 1.25rem 1.25rem;
+  border-top: 1px solid var(--border);
+}
+
+/* ── Interactive charts — zoom, pan, date range ────────────────────── */
+.chart-group { margin-bottom: 2.5rem; }
+.chart-group h3 {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.chart-group h3 .gh-badge {
+  font-size: 0.7rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.chart-card {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.25rem 1.25rem 0.9rem;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 1rem;
+  overflow-x: auto;
+}
+.chart-card h4 {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 0.6rem;
+}
+.chart-canvas-wrap {
+  position: relative;
+  width: 100%;
+  min-height: 320px;
+}
+.chart-canvas-wrap canvas { width: 100% !important; }
+
+/* ── Weather / Outdoor Comparison ──────────────────────────────────── */
+.weather-section {
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+.weather-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+.weather-header h2 { font-size: 1.2rem; color: var(--text-primary); margin: 0; }
+.weather-controls { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.weather-status { color: var(--text-muted); font-size: 0.9rem; margin: 0.25rem 0 0.9rem; }
+.weather-status.error { color: var(--danger); }
+.weather-now {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  align-items: center;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.7rem 1rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+.weather-now b { color: var(--text-primary); }
+.chart-card-title {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+.chart-card-title .chart-hint { flex: 1 1 auto; }
+.chart-dl { display: inline-flex; gap: 0.4rem; margin-left: auto; }
+.chart-dl .btn { line-height: 1; }
+
+/* ── Upload More ───────────────────────────────────────────────────── */
+.upload-more-section {
+  text-align: center;
+  padding: 2rem 0 3rem;
+  border-top: 1px solid var(--border);
+  margin-top: 2rem;
+}
+
+/* ── Empty State ───────────────────────────────────────────────────── */
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--text-muted);
+}
+.empty-state .icon { font-size: 3rem; margin-bottom: 0.75rem; display: block; }
+.empty-state p { font-size: 1rem; }
+
+/* ── Responsive ────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .header { padding: 1.75rem 1rem 1.5rem; }
+  .modal { padding: 1.25rem; }
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+  .stat-card .stat-value { font-size: 1.5rem; }
+  .chart-canvas-wrap { min-height: 220px; }
+  .file-actions { flex-direction: column; }
+  .fb-reset { margin-left: 0; }
+  .fb-date { flex: 1 1 9rem; }
+}
+
+/* ── Scrollbar ─────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--chart-axis); border-radius: 3px; }
+
+/* ── Toast ─────────────────────────────────────────────────────────── */
+.toast {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 1.25rem;
+  box-shadow: var(--shadow-lg);
+  font-size: 0.9rem;
+  z-index: 2000;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.3s, transform 0.3s;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+.toast.error { border-left: 3px solid var(--danger); }
+.toast.success { border-left: 3px solid var(--success); }
+
+/* ── Animation ─────────────────────────────────────────────────────── */
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.fade-in { animation: fadeIn 0.3s ease; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
+
+</style>
+</head>
+<body data-palette="#2a78d6,#eb6834,#1baf7a,#eda100,#e87ba4,#008300,#4a3aa7,#e34948">
+
+<!-- ═══════════════════════ HEADER ═══════════════════════════════════ -->
+<header class="header">
+  <h1>🌿 Thangreens Dashboard</h1>
+  <p class="subtitle">34.07° N, 77.56° E</p>
+  <p class="clock" id="clock"></p>
+</header>
+
+<!-- ═══════════════════════ MAIN ═════════════════════════════════════ -->
+<main class="container">
+
+  <!-- Upload Section -->
+  <section class="upload-section" id="uploadSection">
+    <div class="upload-zone" id="uploadZone" role="button" tabindex="0" aria-label="Upload sensor data files">
+      <span class="icon">📁</span>
+      <span class="label">Upload Sensor Data Files</span>
+      <span class="hint">Select one or more .csv files</span>
+      <input type="file" id="fileInput" accept=".csv" multiple>
+    </div>
+    <div class="file-list" id="fileList" hidden></div>
+    <div class="file-actions" id="fileActions" hidden>
+      <button class="btn btn-secondary btn-sm" id="cancelUpload">Cancel</button>
+      <button class="btn btn-primary btn-sm" id="proceedConfig">Proceed to Configuration →</button>
+    </div>
+  </section>
+
+  <!-- Dashboard Section (hidden until data loaded) -->
+  <section id="dashboardSection" hidden>
+    <!-- Date Range Filter -->
+    <div class="filter-bar">
+      <span class="filter-title">📅 Date Range</span>
+      <div class="filter-presets" id="filterPresets" role="group" aria-label="Date range presets">
+        <button type="button" class="fb-btn active" data-days="all">All</button>
+        <button type="button" class="fb-btn" data-days="7">7d</button>
+        <button type="button" class="fb-btn" data-days="30">30d</button>
+        <button type="button" class="fb-btn" data-days="90">90d</button>
+      </div>
+      <input type="date" class="fb-date" id="rangeStart" aria-label="From date">
+      <span class="fb-sep">–</span>
+      <input type="date" class="fb-date" id="rangeEnd" aria-label="To date">
+      <button type="button" class="fb-btn fb-reset" id="resetZoomBtn" title="Reset zoom and pan on all charts">↺ Reset Zoom</button>
+    </div>
+    <p class="range-caption" id="rangeCaption" aria-live="polite"></p>
+    <!-- Stats Row -->
+    <div class="stats-row" id="statsRow"></div>
+
+    <!-- Validation Report -->
+    <div id="validationReportWrap"></div>
+
+    <!-- Charts -->
+    <div class="charts-section" id="chartsSection"></div>
+
+    <!-- Weather / Outdoor Comparison -->
+    <section class="weather-section" id="weatherSection">
+      <div class="weather-header">
+        <h2>🌤️ Outdoor Comparison — Stok, Ladakh, India</h2>
+        <div class="weather-controls">
+          <button type="button" class="btn btn-secondary btn-sm" id="weatherRefreshBtn">↻ Refresh</button>
+        </div>
+      </div>
+      <p class="weather-status" id="weatherStatus" aria-live="polite"></p>
+      <div class="weather-now" id="weatherNow" hidden></div>
+      <div class="charts-section" id="weatherCharts"></div>
+    </section>
+
+    <!-- Upload More -->
+    <div class="upload-more-section">
+      <button class="btn btn-primary" id="uploadMoreBtn">📤 Upload More Files</button>
+    </div>
+  </section>
+
+  <!-- Empty state shown when no data -->
+  <div class="empty-state" id="emptyState">
+    <span class="icon">🌱</span>
+    <p>No data loaded yet. Upload CSV sensor files to get started.</p>
+  </div>
+</main>
+
+<!-- ═══════════════════════ MODAL ════════════════════════════════════ -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modal">
+    <h2 id="modalTitle">Configure File</h2>
+    <p class="modal-subtitle" id="modalSubtitle"></p>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progressBar" style="width:0%"></div>
+    </div>
+
+    <!-- Q1: Greenhouse -->
+    <div class="question-group">
+      <span class="group-label">Which greenhouse is this data from?</span>
+      <div class="radio-group" id="q1Group">
+        <label class="radio-option" data-value="East GH">
+          <input type="radio" name="greenhouse" value="East GH"> East GH
+        </label>
+        <label class="radio-option" data-value="West GH">
+          <input type="radio" name="greenhouse" value="West GH"> West GH
+        </label>
+      </div>
+    </div>
+
+    <!-- Q2: Data Type -->
+    <div class="question-group">
+      <span class="group-label">What type of data does this file contain?</span>
+      <div class="radio-group" id="q2Group">
+        <label class="radio-option" data-value="ambient">
+          <input type="radio" name="datatype" value="ambient"> Ambient Temperature + Humidity
+        </label>
+        <label class="radio-option" data-value="water" id="waterOption">
+          <input type="radio" name="datatype" value="water"> Water Temperature
+        </label>
+      </div>
+    </div>
+
+    <!-- Q3: Preview -->
+    <div class="question-group" id="previewGroup" hidden>
+      <span class="group-label">File Preview — <span id="previewFileName"></span></span>
+      <div style="overflow-x:auto; margin-top:0.5rem;">
+        <table class="preview-table" id="previewTable">
+          <thead><tr id="previewHead"></tr></thead>
+          <tbody id="previewBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-secondary btn-sm" id="skipFile">Skip This File</button>
+      <button class="btn btn-primary btn-sm" id="nextFile">Next File →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- ═══════════════════════ JAVASCRIPT ══════════════════════════════ -->
+<script>
+
+/* ── Dashboard State ──────────────────────────────────────────────── */
+const dashboardState = {
+  files: { uploaded: [] },
+  data: {
+    eastGH: { ambient: [] },
+    westGH: { ambient: [], water: [] }
+  },
+  stats: { totalValid: 0, totalFiltered: 0, dataQuality: 0, lastUpdated: null },
+  validationLog: []
+};
+
+/* ── Chart instances (for cleanup) ────────────────────────────────── */
+const chartInstances = {};
+
+/* ── Pending files queue ──────────────────────────────────────────── */
+let pendingFiles = [];       // File objects waiting for configuration
+let pendingFileContents = []; // Text contents corresponding to pendingFiles
+let currentFileIndex = 0;
+
+/* ── Clock ────────────────────────────────────────────────────────── */
+function updateClock() {
+  const el = document.getElementById('clock');
+  if (!el) return;
+  const now = new Date();
+  el.textContent = now.toLocaleString('en-US', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+    hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+  });
+}
+updateClock();
+setInterval(updateClock, 60000);
+
+/* ── Toast ────────────────────────────────────────────────────────── */
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + type + ' show';
+  setTimeout(() => { t.className = 'toast'; }, 3000);
+}
+
+/* ── File Upload Handling ─────────────────────────────────────────── */
+const uploadZone = document.getElementById('uploadZone');
+const fileInput = document.getElementById('fileInput');
+const fileListEl = document.getElementById('fileList');
+const fileActionsEl = document.getElementById('fileActions');
+
+let selectedFiles = [];
+
+uploadZone.addEventListener('click', () => fileInput.click());
+uploadZone.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); }});
+uploadZone.addEventListener('dragover', (e) => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+uploadZone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  uploadZone.classList.remove('drag-over');
+  const files = Array.from(e.dataTransfer.files).filter(f => f.name.endsWith('.csv'));
+  if (files.length) addFiles(files);
+});
+
+fileInput.addEventListener('change', () => {
+  if (fileInput.files.length) addFiles(Array.from(fileInput.files));
+  fileInput.value = '';
+});
+
+function addFiles(files) {
+  selectedFiles = [...selectedFiles, ...files];
+  renderFileList();
+}
+
+function renderFileList() {
+  fileListEl.hidden = selectedFiles.length === 0;
+  fileActionsEl.hidden = selectedFiles.length === 0;
+  if (selectedFiles.length === 0) { fileListEl.innerHTML = ''; return; }
+  fileListEl.innerHTML = selectedFiles.map((f, i) => `
+    <div class="file-list-item fade-in">
+      <span class="file-icon">📄</span>
+      <span class="file-name">${esc(f.name)}</span>
+      <span class="file-size">${formatSize(f.size)}</span>
+      <button class="file-remove" data-idx="${i}" title="Remove">&times;</button>
+    </div>
+  `).join('');
+  fileListEl.querySelectorAll('.file-remove').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      selectedFiles.splice(+btn.dataset.idx, 1);
+      renderFileList();
+    });
+  });
+}
+
+document.getElementById('cancelUpload').addEventListener('click', () => {
+  selectedFiles = [];
+  renderFileList();
+});
+
+document.getElementById('proceedConfig').addEventListener('click', async () => {
+  if (!selectedFiles.length) return;
+  pendingFiles = [...selectedFiles];
+  pendingFileContents = [];
+  for (const f of pendingFiles) {
+    pendingFileContents.push(await f.text());
+  }
+  selectedFiles = [];
+  renderFileList();
+  currentFileIndex = 0;
+  openModal();
+});
+
+/* Upload More button */
+document.getElementById('uploadMoreBtn').addEventListener('click', () => fileInput.click());
+
+/* ── Modal / Questionnaire ────────────────────────────────────────── */
+const overlay = document.getElementById('modalOverlay');
+const modalTitle = document.getElementById('modalTitle');
+const modalSubtitle = document.getElementById('modalSubtitle');
+const progressBar = document.getElementById('progressBar');
+const previewGroup = document.getElementById('previewGroup');
+const previewFileName = document.getElementById('previewFileName');
+const previewHead = document.getElementById('previewHead');
+const previewBody = document.getElementById('previewBody');
+const waterOption = document.getElementById('waterOption');
+
+function openModal() {
+  if (currentFileIndex >= pendingFiles.length) {
+    closeModal();
+    finalizeAllFiles();
+    return;
+  }
+  const total = pendingFiles.length;
+  const file = pendingFiles[currentFileIndex];
+  const content = pendingFileContents[currentFileIndex];
+
+  modalTitle.textContent = `Configure File ${currentFileIndex + 1} of ${total}`;
+  modalSubtitle.textContent = file.name;
+  progressBar.style.width = ((currentFileIndex / total) * 100) + '%';
+
+  // Reset selections
+  document.querySelectorAll('#q1Group input, #q2Group input').forEach(r => r.checked = false);
+  document.querySelectorAll('.radio-option').forEach(o => o.classList.remove('selected'));
+
+  // Auto-detect data type from columns
+  const firstLine = content.split('\n')[0];
+  const cols = firstLine.split(',').map(c => c.trim().toLowerCase().replace(/\s+/g, '_'));
+  const hasWater = cols.some(c => c.includes('water_temperature') || c.includes('water temp'));
+  const hasAmbient = cols.some(c => c.includes('ambient_temperature') || c.includes('ambient temp'));
+  const hasHumidity = cols.some(c => c.includes('humidity'));
+
+  // Pre-select data type if detectable
+  if (hasWater && !hasAmbient && !hasHumidity) {
+    document.querySelector('#q2Group input[value="water"]').checked = true;
+    selectRadioOption('#q2Group', 'water');
+  } else if (hasAmbient || hasHumidity) {
+    document.querySelector('#q2Group input[value="ambient"]').checked = true;
+    selectRadioOption('#q2Group', 'ambient');
+  }
+
+  // Show preview (first 3 data rows)
+  renderPreview(content);
+
+  overlay.classList.add('active');
+}
+
+function closeModal() { overlay.classList.remove('active'); }
+
+function selectRadioOption(groupSelector, value) {
+  const group = document.querySelector(groupSelector);
+  group.querySelectorAll('.radio-option').forEach(o => {
+    o.classList.toggle('selected', o.dataset.value === value);
+  });
+}
+
+// Radio option click handlers
+document.querySelectorAll('.radio-option').forEach(opt => {
+  opt.addEventListener('click', () => {
+    const input = opt.querySelector('input[type="radio"]');
+    input.checked = true;
+    const group = opt.closest('.radio-group');
+    group.querySelectorAll('.radio-option').forEach(o => o.classList.remove('selected'));
+    opt.classList.add('selected');
+
+    // Toggle water option availability based on greenhouse
+    if (group.id === 'q1Group') {
+      const isWest = input.value === 'West GH';
+      waterOption.style.opacity = isWest ? '1' : '0.4';
+      waterOption.style.pointerEvents = isWest ? 'auto' : 'none';
+      if (!isWest && document.querySelector('#q2Group input[value="water"]').checked) {
+        document.querySelector('#q2Group input[value="ambient"]').checked = true;
+        selectRadioOption('#q2Group', 'ambient');
+      }
+    }
+  });
+});
+
+function renderPreview(content) {
+  const rows = Papa.parse(content, { header: true, skipEmptyLines: true }).data;
+  const headers = Object.keys(rows[0] || {});
+  previewFileName.textContent = pendingFiles[currentFileIndex].name;
+  previewHead.innerHTML = headers.map(h => `<th>${esc(h)}</th>`).join('');
+  previewBody.innerHTML = rows.slice(0, 3).map(r =>
+    '<tr>' + headers.map(h => `<td>${esc(r[h] ?? '')}</td>`).join('') + '</tr>'
+  ).join('');
+  previewGroup.hidden = rows.length === 0;
+}
+
+document.getElementById('skipFile').addEventListener('click', () => {
+  pendingFiles.splice(currentFileIndex, 1);
+  pendingFileContents.splice(currentFileIndex, 1);
+  if (currentFileIndex >= pendingFiles.length) currentFileIndex = 0;
+  openModal();
+});
+
+document.getElementById('nextFile').addEventListener('click', () => {
+  const gh = document.querySelector('#q1Group input:checked');
+  const dt = document.querySelector('#q2Group input:checked');
+  if (!gh || !dt) {
+    showToast('Please select both greenhouse and data type.', 'error');
+    return;
+  }
+  // Store config on the file object for later processing
+  pendingFiles[currentFileIndex]._gh = gh.value;
+  pendingFiles[currentFileIndex]._dt = dt.value;
+  currentFileIndex++;
+  openModal();
+});
+
+/* ── Finalize All Files ───────────────────────────────────────────── */
+function finalizeAllFiles() {
+  // Process each configured file
+  for (let i = 0; i < pendingFiles.length; i++) {
+    const file = pendingFiles[i];
+    const content = pendingFileContents[i];
+    processFile(content, file.name, file._gh, file._dt);
+  }
+  pendingFiles = [];
+  pendingFileContents = [];
+  calculateStats();
+  renderDashboard();
+  if (dashboardState.stats.totalValid > 0) {
+    showToast(`Dashboard updated — ${dashboardState.stats.totalValid.toLocaleString()} valid records loaded.`);
+  }
+}
+
+/* ── CSV Parsing ──────────────────────────────────────────────────── */
+function parseCSV(fileContent, fileName) {
+  const result = Papa.parse(fileContent, {
+    header: true,
+    skipEmptyLines: true,
+    dynamicTyping: false
+  });
+  if (result.errors.length > 0) {
+    console.warn(`CSV parse warnings for ${fileName}:`, result.errors);
+  }
+  return result.data;
+}
+
+/* ── Data Validation ──────────────────────────────────────────────── */
+function validateRow(row, dataType) {
+  // Validate timestamp
+  const ts = row.timestamp;
+  if (!ts || isNaN(Date.parse(ts))) {
+    return { valid: false, issue: 'Invalid or missing timestamp' };
+  }
+
+  if (dataType === 'ambient') {
+    // Validate ambient_temperature
+    const temp = parseFloat(row.ambient_temperature);
+    if (row.ambient_temperature !== undefined && row.ambient_temperature !== '') {
+      if (isNaN(temp) || temp < -40 || temp > 60) {
+        return { valid: false, issue: `Ambient temperature out of range: ${row.ambient_temperature}°C (valid: -40 to 60)` };
+      }
+    }
+    // Validate humidity
+    const hum = parseFloat(row.humidity);
+    if (row.humidity !== undefined && row.humidity !== '') {
+      if (isNaN(hum) || hum < 0 || hum > 100) {
+        return { valid: false, issue: `Humidity out of range: ${row.humidity}% (valid: 0 to 100)` };
+      }
+    }
+  } else if (dataType === 'water') {
+    const temp = parseFloat(row.water_temperature);
+    if (row.water_temperature !== undefined && row.water_temperature !== '') {
+      if (isNaN(temp) || temp < -5 || temp > 35) {
+        return { valid: false, issue: `Water temperature out of range: ${row.water_temperature}°C (valid: -5 to 35)` };
+      }
+    }
+  }
+  return { valid: true };
+}
+
+/* ── Process a single file ────────────────────────────────────────── */
+function processFile(content, fileName, greenhouse, dataType) {
+  const rows = parseCSV(content, fileName);
+  const totalRows = rows.length;
+
+  if (totalRows === 0) {
+    dashboardState.validationLog.push({ file: fileName, row: 0, value: '-', reason: 'File is empty' });
+    return;
+  }
+
+  const validRows = [];
+  let filteredCount = 0;
+
+  for (let i = 0; i < rows.length; i++) {
+    const row = rows[i];
+    const result = validateRow(row, dataType);
+    if (result.valid) {
+      const tsMs = new Date(row.timestamp).getTime();
+      validRows.push(dataType === 'ambient'
+        ? [tsMs, parseFloat(row.ambient_temperature), parseFloat(row.humidity)]
+        : [tsMs, parseFloat(row.water_temperature)]);
+    } else {
+      filteredCount++;
+      dashboardState.validationLog.push({
+        file: fileName,
+        row: i + 1,
+        value: JSON.stringify(row).substring(0, 80),
+        reason: result.issue
+      });
+    }
+  }
+
+  // Check if > 50% invalid — flag as suspect
+  if (filteredCount > totalRows * 0.5 && totalRows > 2) {
+    dashboardState.validationLog.push({
+      file: fileName,
+      row: 0,
+      value: '-',
+      reason: `⚠ File flagged: ${filteredCount}/${totalRows} rows invalid (>50%)`
+    });
+  }
+
+  // Sort chronologically
+  validRows.sort((a, b) => a[0] - b[0]);
+
+  // Merge into state
+  const target = greenhouse === 'East GH'
+    ? dashboardState.data.eastGH
+    : dashboardState.data.westGH;
+
+  if (dataType === 'ambient') {
+    target.ambient = mergeData(validRows, target.ambient);
+  } else {
+    target.water = mergeData(validRows, target.water);
+  }
+
+  // Record file metadata
+  dashboardState.files.uploaded.push({
+    name: fileName,
+    greenhouse,
+    dataType,
+    totalRecords: totalRows,
+    filteredRecords: filteredCount,
+    filterLog: dashboardState.validationLog.filter(v => v.file === fileName)
+  });
+}
+
+/* ── Merge Data (dedup by timestamp, sort) ────────────────────────── */
+function mergeData(newData, existingData) {
+  // Deduplicate by timestamp (keep latest), sort chronologically
+  const seen = new Map();
+  for (const r of existingData) seen.set(r[0], r);
+  for (const r of newData) seen.set(r[0], r);
+  return Array.from(seen.values()).sort((a, b) => a[0] - b[0]);
+}
+
+/* ── Calculate Stats ──────────────────────────────────────────────── */
+function calculateStats() {
+  let totalValid = 0;
+  let totalFiltered = 0;
+
+  for (const f of dashboardState.files.uploaded) {
+    totalValid += f.totalRecords - f.filteredRecords;
+    totalFiltered += f.filteredRecords;
+  }
+
+  const total = totalValid + totalFiltered;
+  dashboardState.stats = {
+    totalValid,
+    totalFiltered,
+    dataQuality: total > 0 ? ((totalValid / total) * 100) : 0,
+    lastUpdated: new Date().toISOString()
+  };
+}
+
+/* ── Render Dashboard ─────────────────────────────────────────────── */
+function renderDashboard() {
+  const hasData = dashboardState.stats.totalValid > 0;
+  document.getElementById('uploadSection').hidden = hasData;
+  document.getElementById('emptyState').hidden = hasData;
+  document.getElementById('dashboardSection').hidden = !hasData;
+
+  if (!hasData) return;
+
+  renderStats();
+  renderValidationReport();
+  renderCharts();
+}
+
+/* ── Stats Cards ──────────────────────────────────────────────────── */
+function renderStats() {
+  const s = dashboardState.stats;
+  const qualityClass = s.dataQuality >= 95 ? '' : s.dataQuality >= 80 ? 'warn' : 'danger';
+  const lastUpd = s.lastUpdated ? new Date(s.lastUpdated).toLocaleTimeString() : '-';
+
+  document.getElementById('statsRow').innerHTML = `
+    <div class="stat-card fade-in">
+      <div class="stat-value">${s.totalValid.toLocaleString()}</div>
+      <div class="stat-label">Total Valid Records</div>
+    </div>
+    <div class="stat-card ${s.totalFiltered > 0 ? 'warn' : ''} fade-in">
+      <div class="stat-value">${s.totalFiltered.toLocaleString()}</div>
+      <div class="stat-label">Filtered Records</div>
+    </div>
+    <div class="stat-card ${qualityClass} fade-in">
+      <div class="stat-value">${s.dataQuality.toFixed(1)}%</div>
+      <div class="stat-label">Data Quality</div>
+    </div>
+    <div class="stat-card fade-in">
+      <div class="stat-value" style="font-size:1.25rem">${lastUpd}</div>
+      <div class="stat-label">Last Updated</div>
+    </div>
+  `;
+
+  const cap = document.getElementById('rangeCaption');
+  if (cap) {
+    const info = visibleInfo();
+    const range = fmtRange(info.min, info.max);
+    cap.textContent = (filterState.start || filterState.end)
+      ? 'Showing ' + range + ' · ' + info.n.toLocaleString() + ' data points'
+      : 'All data · ' + info.n.toLocaleString() + ' plotted points · ' + s.totalValid.toLocaleString() + ' validated records';
+  }
+}
+
+/* ── Validation Report ────────────────────────────────────────────── */
+function renderValidationReport() {
+  const wrap = document.getElementById('validationReportWrap');
+  const log = dashboardState.validationLog;
+  if (log.length === 0) { wrap.innerHTML = ''; return; }
+
+  const s = dashboardState.stats;
+  const badgeClass = s.dataQuality >= 95 ? 'badge-ok' : s.dataQuality >= 80 ? 'badge-warn' : 'badge-danger';
+  const badgeText = s.dataQuality >= 95 ? 'Good' : s.dataQuality >= 80 ? 'Warnings' : 'Issues';
+
+  wrap.innerHTML = `
+    <div class="validation-report fade-in">
+      <div class="validation-header" id="valHeader">
+        <span>📋 Validation Report</span>
+        <span class="badge ${badgeClass}">${badgeText} — ${log.length} entries</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="validation-body" id="valBody">
+        <div class="validation-table-wrap">
+          <table class="validation-table">
+            <thead><tr>
+              <th>File</th><th>Row</th><th>Value</th><th>Reason</th>
+            </tr></thead>
+            <tbody>
+              ${log.map(v => `<tr>
+                <td>${esc(v.file)}</td>
+                <td>${v.row}</td>
+                <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis">${esc(v.value)}</td>
+                <td>${esc(v.reason)}</td>
+              </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="validation-footer">
+        <a class="btn btn-sm btn-secondary" href="report.html" target="_blank" rel="noopener">📄 Open Field Report (report.html)</a>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('valHeader').addEventListener('click', () => {
+    document.getElementById('valHeader').classList.toggle('open');
+    document.getElementById('valBody').classList.toggle('open');
+  });
+}
+
+/* ── Charts ───────────────────────────────────────────────────────── */
+const HAS_ZOOM = (typeof window.ChartZoom !== 'undefined');
+if (HAS_ZOOM) Chart.register(ChartZoom);          // wheel/pinch zoom + drag pan
+const MAX_CHART_POINTS = 2000;                    // downsample target per rendered view
+const DAY_MS = 86400000;                          // one day in milliseconds
+const filterState = { start: null, end: null };
+let currentPreset = 'all';
+let dataBounds = { min: null, max: null };
+
+/* ── Outdoor weather (Open-Meteo historical archive) state ─────────── */
+const WEATHER_LOC = { name: 'Stok, Ladakh, India', lat: 34.0644, lon: 77.5533 };
+const OM_START = '2026-01-01';   // historical range covering the embedded sensor record
+const OM_END   = '2026-09-05';
+const weatherState = { current: null, series: [], raw: null, status: '', error: null, fetched: false };
+
+const allSeries = () => {
+  const out = [
+    dashboardState.data.eastGH.ambient,
+    dashboardState.data.westGH.ambient,
+    dashboardState.data.westGH.water
+  ];
+  if (weatherState.series && weatherState.series.length) out.push(weatherState.series);
+  return out;
+};
+
+/* ── Shape-preserving LTTB downsampling (points: [tsMs, v1, v2]) ──── */
+function lttb(data, threshold) {
+  const n = data.length;
+  if (threshold >= n || n < 3) return data.slice();
+  const sampled = [];
+  let a = 0;
+  const every = (n - 2) / (threshold - 2);
+  sampled.push(data[0]);
+  for (let i = 0; i < threshold - 2; i++) {
+    const avgRangeStart = Math.floor((i + 1) * every) + 1;
+    const avgRangeEnd = Math.min(Math.floor((i + 2) * every) + 1, n);
+    const avgLength = (avgRangeEnd - avgRangeStart) || 1;
+    let avgX = 0, avgY = 0;
+    for (let j = avgRangeStart; j < avgRangeEnd; j++) { avgX += data[j][0]; avgY += data[j][1]; }
+    avgX /= avgLength; avgY /= avgLength;
+    const rangeOffs = Math.floor(i * every) + 1;
+    const rangeTo = Math.floor((i + 1) * every) + 1;
+    const ax = data[a][0], ay = data[a][1];
+    let maxArea = -1, nextA = rangeOffs;
+    for (let j = rangeOffs; j < rangeTo; j++) {
+      const area = Math.abs((ax - avgX) * (data[j][1] - ay) - (ax - data[j][0]) * (avgY - ay));
+      if (area > maxArea) { maxArea = area; nextA = j; }
+    }
+    sampled.push(data[nextA]);
+    a = nextA;
+  }
+  sampled.push(data[n - 1]);
+  return sampled;
+}
+
+/* Sorted-series helpers (binary search) — returns [firstIdx, 1+lastIdx] */
+function indexOfRange(series, lo, hi) {
+  let a = 0, b = series.length;
+  while (a < b) { const m = (a + b) >> 1; series[m][0] < lo ? (a = m + 1) : (b = m); }
+  let c = 0, d = series.length;
+  while (c < d) { const m = (c + d) >> 1; series[m][0] <= hi ? (c = m + 1) : (d = m); }
+  return [a, c];
+}
+function sliceSeries(series) {
+  const lo = filterState.start ? filterState.start.getTime() : -Infinity;
+  const hi = filterState.end ? filterState.end.getTime() : Infinity;
+  if (lo === -Infinity && hi === Infinity) return series;
+  const [a, c] = indexOfRange(series, lo, hi);
+  return c > a ? series.slice(a, c) : [];
+}
+function filterRange(series, lo, hi) {
+  const [a, c] = indexOfRange(series, lo, hi);
+  return c > a ? series.slice(a, c) : [];
+}
+function visibleInfo() {
+  const lo = filterState.start ? filterState.start.getTime() : -Infinity;
+  const hi = filterState.end ? filterState.end.getTime() : Infinity;
+  let n = 0, min = Infinity, max = -Infinity;
+  for (const s of allSeries()) {
+    if (!s.length) continue;
+    const [a, c] = indexOfRange(s, lo, hi);
+    if (c > a) {
+      n += c - a;
+      if (s[a][0] < min) min = s[a][0];
+      if (s[c - 1][0] > max) max = s[c - 1][0];
+    }
+  }
+  return { n, min: min === Infinity ? null : min, max: max === -Infinity ? null : max };
+}
+function computeBounds() {
+  let min = Infinity, max = -Infinity;
+  for (const s of allSeries()) {
+    if (s.length) {
+      if (s[0][0] < min) min = s[0][0];
+      if (s[s.length - 1][0] > max) max = s[s.length - 1][0];
+    }
+  }
+  dataBounds = { min: min === Infinity ? null : min, max: max === -Infinity ? null : max };
+}
+
+/* ── Date format helpers ───────────────────────────────────────────── */
+function fmtDateLocal(d) {
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+function fmtRange(min, max) {
+  if (min == null) return 'no records in range';
+  const s = new Date(min), e = new Date(max);
+  const d = (x) => x.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+  return `${d(s)} – ${d(e)} ${e.getFullYear()}`;
+}
+
+/* ── Filter controls ───────────────────────────────────────────────── */
+function syncDateInputs() {
+  if (!document.getElementById('rangeStart')) return;
+  document.getElementById('rangeStart').value = filterState.start ? fmtDateLocal(filterState.start) : '';
+  document.getElementById('rangeEnd').value = filterState.end ? fmtDateLocal(filterState.end) : '';
+  document.querySelectorAll('#filterPresets .fb-btn').forEach(b => b.classList.toggle('active', b.dataset.days === currentPreset));
+}
+function applyDateFilter() { renderDashboard(); }
+function onCustomRange() {
+  const sEl = document.getElementById('rangeStart');
+  const eEl = document.getElementById('rangeEnd');
+  if (sEl.value && eEl.value && sEl.value > eEl.value) {
+    const t = sEl.value; sEl.value = eEl.value; eEl.value = t;
+  }
+  filterState.start = sEl.value ? new Date(sEl.value + 'T00:00:00') : null;
+  filterState.end = eEl.value ? new Date(eEl.value + 'T23:59:59.999') : null;
+  currentPreset = 'custom';
+  document.querySelectorAll('#filterPresets .fb-btn').forEach(b => b.classList.remove('active'));
+  applyDateFilter();
+}
+function setPreset(days) {
+  currentPreset = days;
+  if (days === 'all') {
+    filterState.start = null;
+    filterState.end = null;
+  } else if (dataBounds.max != null) {
+    const n = parseInt(days, 10);
+    filterState.end = new Date(dataBounds.max);
+    filterState.start = new Date(dataBounds.max - n * DAY_MS);
+  }
+  syncDateInputs();
+  applyDateFilter();
+}
+
+/* ── Zoom / pan: re-decimate to the visible range so detail appears ── */
+function redecimateChart(chart) {
+  const full = chart._fullData;
+  if (!full || !chart.scales.x) return;
+  const dec = lttb(filterRange(full, chart.scales.x.min, chart.scales.x.max), MAX_CHART_POINTS);
+  chart.data.labels = dec.map(p => p[0]);
+  chart.data.datasets[0].data = dec.map(p => p[1]);
+  if (chart.data.datasets[1]) chart.data.datasets[1].data = dec.map(p => p[2]);
+  chart.update('none');
+}
+function resetAllZoom() {
+  for (const name in chartInstances) {
+    const c = chartInstances[name];
+    if (c.resetZoom) { try { c.resetZoom(); } catch (e) {} }
+  }
+  setTimeout(() => {
+    for (const name in chartInstances) {
+      const c = chartInstances[name];
+      if (c._seriesSpec) redecimateCompareChart(c);
+      else redecimateChart(c);
+    }
+  }, 400);
+}
+function wireFilterBar() {
+  const bar = document.getElementById('filterPresets');
+  if (!bar) return;
+  bar.addEventListener('click', (e) => {
+    const b = e.target.closest('.fb-btn');
+    if (b && b.dataset.days) setPreset(b.dataset.days);
+  });
+  document.getElementById('rangeStart').addEventListener('change', onCustomRange);
+  document.getElementById('rangeEnd').addEventListener('change', onCustomRange);
+  document.getElementById('resetZoomBtn').addEventListener('click', resetAllZoom);
+  syncDateInputs();
+}
+wireFilterBar();
+
+/* ── Download helper (CSV / Excel) for chart data ──────────────────── */
+function dlButtonsHTML() {
+  return `<span class="chart-dl">
+    <button type="button" class="btn btn-secondary btn-sm" data-dl="csv">⬇ CSV</button>
+    <button type="button" class="btn btn-secondary btn-sm" data-dl="xlsx">⬇ Excel</button>
+  </span>`;
+}
+function wireDownload(grp, spec) {
+  grp.querySelectorAll('[data-dl]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (btn.dataset.dl === 'csv') exportCompareCSV(spec);
+      else exportCompareExcel(spec);
+    });
+  });
+}
+function downloadText(filename, text, mime) {
+  const blob = new Blob([text], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+function exportTable(spec) {
+  // Merge each series' points (within the active date filter) by timestamp
+  const lo = filterState.start ? filterState.start.getTime() : -Infinity;
+  const hi = filterState.end ? filterState.end.getTime() : Infinity;
+  const cols = spec.series.map(s => ({ label: s.label, val: s.val, pts: filterRange(s.full, lo, hi) }));
+  const events = [];
+  cols.forEach((c, ci) => { for (const p of c.pts) events.push([p[0], ci, p[c.val]]); });
+  events.sort((a, b) => a[0] - b[0]);
+  const rows = [['Timestamp (ISO)', ...cols.map(c => c.label)]];
+  let i = 0;
+  while (i < events.length) {
+    const ts = events[i][0];
+    const cell = new Array(cols.length).fill('');
+    while (i < events.length && events[i][0] === ts) { cell[events[i][1]] = events[i][2]; i++; }
+    rows.push([new Date(ts).toISOString(), ...cell]);
+  }
+  return rows;
+}
+function exportCompareCSV(spec) {
+  const rows = exportTable(spec);
+  const csv = rows.map(r => r.map(v => (typeof v === 'number' ? String(v) : '"' + String(v).replace(/"/g, '""') + '"')).join(',')).join('\n');
+  downloadText(spec.name.replace(/\s+/g, '_') + '.csv', csv, 'text/csv;charset=utf-8');
+}
+function exportCompareExcel(spec) {
+  const rows = exportTable(spec);
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Data');
+  XLSX.writeFile(wb, spec.name.replace(/\s+/g, '_') + '.xlsx');
+}
+
+/* ── Re-decimate an object-data comparison chart on zoom/pan ───────── */
+function redecimateCompareChart(chart) {
+  const spec = chart._seriesSpec;
+  if (!spec || !chart.scales.x) return;
+  const lo = chart.scales.x.min, hi = chart.scales.x.max;
+  spec.forEach((s, i) => {
+    const ds = chart.data.datasets[i];
+    if (!ds) return;
+    const vis = filterRange(s.full, lo, hi);
+    const dec = lttb(vis, MAX_CHART_POINTS);
+    ds.data = dec.map(p => ({ x: p[0], y: p[s.val] }));
+  });
+  chart.update('none');
+}
+
+/* ── Wet-bulb temperature (Stull formula, °C with RH%) ─────────────── */
+function wetBulb(T, RH) {
+  if (T == null || RH == null || isNaN(T) || isNaN(RH)) return null;
+  return T * Math.atan(0.151977 * Math.sqrt(RH + 8.313659))
+       + Math.atan(T + RH)
+       - Math.atan(RH - 1.676331)
+       + 0.00391838 * Math.pow(RH, 1.5) * Math.atan(0.023101 * RH)
+       - 4.686035;
+}
+const wbCache = new Map();
+function wbSeries(ambient) {
+  if (!wbCache.has(ambient)) {
+    wbCache.set(ambient, ambient.map(p => [p[0], wetBulb(p[1], p[2])]));
+  }
+  return wbCache.get(ambient);
+}
+
+/* ── Open-Meteo historical archive: fetch, status ──────────────────── */
+function setWeatherStatus(msg, isError) {
+  weatherState.status = msg;
+  const el = document.getElementById('weatherStatus');
+  if (el) { el.textContent = msg; el.classList.toggle('error', !!isError); }
+}
+async function fetchWeather() {
+  setWeatherStatus('Fetching historical weather from Open-Meteo…');
+  const vars = 'temperature_2m,relative_humidity_2m,dew_point_2m,' +
+    'soil_temperature_0_to_7cm,soil_temperature_7_to_28cm,soil_temperature_28_to_100cm,soil_temperature_100_to_255cm,' +
+    'soil_moisture_0_to_7cm,soil_moisture_7_to_28cm,soil_moisture_28_to_100cm,soil_moisture_100_to_255cm,' +
+    'wet_bulb_temperature_2m,direct_radiation,wind_speed_10m_spread';
+  const url = `https://archive-api.open-meteo.com/v1/archive?latitude=${WEATHER_LOC.lat}&longitude=${WEATHER_LOC.lon}&start_date=${OM_START}&end_date=${OM_END}&hourly=${vars}&timezone=auto`;
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('Open-Meteo HTTP ' + res.status);
+    const j = await res.json();
+    const h = j.hourly || {};
+    const n = (h.time || []).length;
+    if (!n) throw new Error('No data returned');
+    const dewSeries = [];
+    const soilTemp = [
+      { key: 'soil_temperature_0_to_7cm',     label: 'Soil 0–7 cm' },
+      { key: 'soil_temperature_7_to_28cm',    label: 'Soil 7–28 cm' },
+      { key: 'soil_temperature_28_to_100cm',  label: 'Soil 28–100 cm' },
+      { key: 'soil_temperature_100_to_255cm', label: 'Soil 100–255 cm' }
+    ].map(d => ({ ...d, series: [] }));
+    const soilMoi = [
+      { key: 'soil_moisture_0_to_7cm',     label: 'Soil 0–7 cm' },
+      { key: 'soil_moisture_7_to_28cm',    label: 'Soil 7–28 cm' },
+      { key: 'soil_moisture_28_to_100cm',  label: 'Soil 28–100 cm' },
+      { key: 'soil_moisture_100_to_255cm', label: 'Soil 100–255 cm' }
+    ].map(d => ({ ...d, series: [] }));
+    const series = [];
+    for (let i = 0; i < n; i++) {
+      const t = h.temperature_2m[i];
+      const rh = h.relative_humidity_2m[i];
+      if (t == null || rh == null) continue;
+      series.push([
+        new Date(h.time[i]).getTime(),
+        t,
+        rh,
+        h.wet_bulb_temperature_2m != null && h.wet_bulb_temperature_2m[i] != null
+          ? h.wet_bulb_temperature_2m[i]
+          : wetBulb(t, rh)
+      ]);
+      const ts = new Date(h.time[i]).getTime();
+      if (h.dew_point_2m != null && h.dew_point_2m[i] != null) dewSeries.push([ts, h.dew_point_2m[i]]);
+      for (const sd of soilTemp) if (h[sd.key] != null && h[sd.key][i] != null) sd.series.push([ts, h[sd.key][i]]);
+      for (const sd of soilMoi) if (h[sd.key] != null && h[sd.key][i] != null) sd.series.push([ts, h[sd.key][i]]);
+    }
+    series.sort((a, b) => a[0] - b[0]);
+    weatherState.series = series;
+    weatherState.dew = dewSeries;
+    weatherState.soilTemp = soilTemp;
+    weatherState.soilMoi = soilMoi;
+    weatherState.raw = h;
+    weatherState.current = series.length ? {
+      temp: series[series.length - 1][1],
+      humidity: series[series.length - 1][2],
+      wetBulb: series[series.length - 1][3],
+      desc: 'Historical (Open-Meteo / ERA5)',
+      at: new Date(series[series.length - 1][0])
+    } : null;
+    weatherState.error = null;
+    computeBounds();
+    renderDashboard();
+    setWeatherStatus(series.length
+      ? 'Historical outdoor data · ' + fmtRange(series[0][0], series[series.length - 1][0]) + ' · ' + series.length.toLocaleString() + ' hourly points (Open-Meteo / ERA5).'
+      : 'No outdoor data returned.');
+  } catch (err) {
+    weatherState.error = String(err.message || err);
+    setWeatherStatus('Weather error: ' + weatherState.error, true);
+  }
+}
+const weatherRefreshBtn = document.getElementById('weatherRefreshBtn');
+if (weatherRefreshBtn) weatherRefreshBtn.addEventListener('click', () => fetchWeather());
+
+/* ── Charts ────────────────────────────────────────────────────────── */
+function renderCharts() {
+  // Destroy existing charts
+  Object.values(chartInstances).forEach(c => c.destroy());
+
+  const section = document.getElementById('chartsSection');
+  section.innerHTML = '';
+  computeBounds();
+
+  const isDark = document.documentElement.dataset.theme === 'dark'
+    || (!document.documentElement.dataset.theme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+  const colors = {
+    temp: isDark ? '#4f90e0' : '#2a78d6',
+    humidity: isDark ? '#d95926' : '#eb6834',
+    water: isDark ? '#ef6b6b' : '#e34948',
+    west: isDark ? '#2fce94' : '#1baf7a',
+    outdoor: isDark ? '#f0903f' : '#eb6834',
+    soilTemp: isDark
+      ? ['#f2d09a', '#e0b477', '#ce9957', '#bb7f3c']
+      : ['#c99a58', '#b07f43', '#97642f', '#7e4a1e'],
+    soilMoi: isDark
+      ? ['#b9dcf6', '#8bc3f6', '#6fb1ea', '#5a9fd9']
+      : ['#7fb4e3', '#5da2e3', '#3b80c1', '#2a6fb0'],
+    grid: isDark ? '#25302a' : '#e3e9e4',
+    text: isDark ? '#89968f' : '#7c8a84',
+    textMuted: isDark ? '#89968f' : '#7c8a84',
+    surface: isDark ? '#141a17' : '#ffffff',
+    axisLine: isDark ? '#89968f' : '#7c8a84'
+  };
+
+  const commonScaleOpts = (yLabel) => ({
+    grid: { color: colors.grid, lineWidth: 1 },
+    border: { color: colors.axisLine },
+    ticks: { color: colors.textMuted, font: { size: 12 } },
+    title: { display: true, text: yLabel, color: colors.text, font: { size: 13, weight: '500' } }
+  });
+
+  const commonTimeOpts = () => ({
+    type: 'time',
+    time: {
+      tooltipFormat: 'dd MMM yyyy, HH:mm',
+      displayFormats: { minute: 'HH:mm', hour: 'HH:mm', day: 'dd MMM', week: 'dd MMM', month: 'MMM yyyy' }
+    },
+    grid: { color: colors.grid, lineWidth: 1 },
+    border: { color: colors.axisLine },
+    ticks: { color: colors.textMuted, font: { size: 12 }, maxRotation: 0 }
+  });
+
+  const tooltipStyle = {
+    backgroundColor: isDark ? '#141a17' : '#ffffff',
+    titleColor: isDark ? '#e7ede9' : '#101915',
+    bodyColor: isDark ? '#a7b4ae' : '#45534e',
+    borderColor: isDark ? '#25302a' : '#e3e9e4',
+    borderWidth: 1,
+    padding: 10,
+    cornerRadius: 6,
+    bodyFont: { size: 13 },
+    titleFont: { size: 13, weight: '600' }
+  };
+  const tooltipTitle = (items) => {
+    const d = new Date(items[0].label);
+    return d.toLocaleString('en-US', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false });
+  };
+
+  // Zoom/pan config (guarded so the page still works if the plugin CDN is unreachable)
+  const zoomOpts = (lo, hi, onRedec = redecimateChart) => (HAS_ZOOM ? {
+    zoom: {
+      limits: { x: { min: lo, max: hi } },
+      zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' },
+      pan: { enabled: true, mode: 'x', modifierKey: null },
+      onZoomComplete: ({ chart }) => onRedec(chart),
+      onPanComplete: ({ chart }) => onRedec(chart)
+    }
+  } : {});
+
+  // Constrain the custom date pickers to the data bounds
+  const sEl = document.getElementById('rangeStart');
+  if (sEl && dataBounds.min != null) {
+    const loStr = fmtDateLocal(new Date(dataBounds.min));
+    const hiStr = fmtDateLocal(new Date(dataBounds.max));
+    sEl.min = loStr; sEl.max = hiStr;
+    document.getElementById('rangeEnd').min = loStr;
+    document.getElementById('rangeEnd').max = hiStr;
+  }
+
+  // ── Outdoor comparison charts (Open-Meteo) ──────────────────────
+  function buildCompareChart(id, title, spec, yLabel, container) {
+    let lo = Infinity, hi = -Infinity;
+    for (const s of spec.series) {
+      if (s.full.length) {
+        if (s.full[0][0] < lo) lo = s.full[0][0];
+        if (s.full[s.full.length - 1][0] > hi) hi = s.full[s.full.length - 1][0];
+      }
+    }
+    if (lo === Infinity) return;
+    const datasets = spec.series.map(s => {
+      const vis = sliceSeries(s.full);
+      const dec = lttb(vis, MAX_CHART_POINTS);
+      return {
+        label: s.label,
+        data: dec.map(p => ({ x: p[0], y: p[s.val] })),
+        borderColor: s.color,
+        backgroundColor: 'transparent',
+        borderWidth: 1,
+        tension: 0.3,
+        pointRadius: 0,
+        pointHoverRadius: 5,
+        pointHoverBackgroundColor: s.color,
+        pointHoverBorderColor: colors.surface,
+        pointHoverBorderWidth: 2
+      };
+    });
+    const grp = document.createElement('div');
+    grp.className = 'chart-group fade-in';
+    grp.innerHTML = `
+      <h3>${title}</h3>
+      <div class="chart-card">
+        <h4 class="chart-card-title">${esc(title)} <span class="chart-hint">· scroll to zoom · drag to pan</span>${dlButtonsHTML()}</h4>
+        <div class="chart-canvas-wrap"><canvas id="${id}"></canvas></div>
+      </div>
+    `;
+    container.appendChild(grp);
+    const chart = new Chart(grp.querySelector('#' + id), {
+      type: 'line',
+      data: { datasets },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: {
+            position: 'top',
+            labels: { color: colors.text, usePointStyle: true, pointStyle: 'line', padding: 16, font: { size: 12 } }
+          },
+          tooltip: { ...tooltipStyle, callbacks: {
+            title: (items) => new Date(items[0].parsed.x).toLocaleString('en-US', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false })
+          } },
+          ...zoomOpts(lo, hi, redecimateCompareChart)
+        },
+        scales: {
+          x: { ...commonTimeOpts() },
+          y: { ...commonScaleOpts(yLabel) }
+        }
+      }
+    });
+    chart._seriesSpec = spec.series;
+    chart._exportSpec = spec;
+    wireDownload(grp, spec);
+    chartInstances[id] = chart;
+  }
+
+  function renderWeatherCharts() {
+    const wrap = document.getElementById('weatherCharts');
+    const nowEl = document.getElementById('weatherNow');
+    if (!wrap) return;
+    wrap.innerHTML = '';
+    const eastA = dashboardState.data.eastGH.ambient;
+    const westA = dashboardState.data.westGH.ambient;
+    const westW = dashboardState.data.westGH.water;
+    const outdoor = weatherState.series;
+
+    if (weatherState.current && nowEl) {
+      const c = weatherState.current;
+      nowEl.hidden = false;
+      nowEl.innerHTML = `
+        <span><b>📍 ${esc(WEATHER_LOC.name)}</b></span>
+        <span>Temp <b>${c.temp != null ? c.temp.toFixed(1) + ' °C' : '—'}</b></span>
+        <span>Humidity <b>${c.humidity != null ? c.humidity.toFixed(0) + ' %' : '—'}</span>
+        <span>Wet Bulb <b>${c.wetBulb != null ? c.wetBulb.toFixed(1) + ' °C' : '—'}</span>
+        ${c.desc ? '<span>' + esc(c.desc) + '</span>' : ''}
+      `;
+    } else if (nowEl) {
+      nowEl.hidden = true;
+    }
+
+    // Auto-fetch weather the first time the dashboard renders (key is hardcoded)
+    if (!weatherState.fetched) {
+      weatherState.fetched = true;
+      fetchWeather();
+    }
+
+    const wbE = wbSeries(eastA);
+    const wbW = wbSeries(westA);
+
+    const defs = [
+      {
+        id: 'chartCmpTemp',
+        title: 'Ambient Temperature — East vs West vs Outdoor',
+        yLabel: 'Temperature (°C)',
+        name: 'Ambient Temperature Comparison',
+        series: [
+          { label: 'East GH Ambient (°C)', color: colors.temp, full: eastA, val: 1 },
+          { label: 'West GH Ambient (°C)', color: colors.west, full: westA, val: 1 },
+          { label: 'Outdoor (°C)', color: colors.outdoor, full: outdoor, val: 1 }
+        ]
+      },
+      {
+        id: 'chartCmpHum',
+        title: 'Relative Humidity — East vs West vs Outdoor',
+        yLabel: 'Relative Humidity (%)',
+        name: 'Relative Humidity Comparison',
+        series: [
+          { label: 'East GH Humidity (%)', color: colors.temp, full: eastA, val: 2 },
+          { label: 'West GH Humidity (%)', color: colors.west, full: westA, val: 2 },
+          { label: 'Outdoor Humidity (%)', color: colors.outdoor, full: outdoor, val: 2 }
+        ]
+      },
+      {
+        id: 'chartCmpWater',
+        title: 'Water Temperature vs Outdoor Ambient',
+        yLabel: 'Temperature (°C)',
+        name: 'Water vs Outdoor Comparison',
+        series: [
+          { label: 'West GH Water (°C)', color: colors.water, full: westW, val: 1 },
+          { label: 'Outdoor Ambient (°C)', color: colors.outdoor, full: outdoor, val: 1 }
+        ]
+      },
+      {
+        id: 'chartCmpWb',
+        title: 'Wet Bulb Temperature — East vs West vs Outdoor',
+        yLabel: 'Wet Bulb (°C)',
+        name: 'Wet Bulb Comparison',
+        series: [
+          { label: 'East GH Wet Bulb (°C)', color: colors.temp, full: wbE, val: 1 },
+          { label: 'West GH Wet Bulb (°C)', color: colors.west, full: wbW, val: 1 },
+          { label: 'Outdoor Wet Bulb (°C)', color: colors.outdoor, full: outdoor, val: 3 }
+        ]
+      },
+      {
+        id: 'chartCmpDew',
+        title: 'Outdoor Dew Point',
+        yLabel: 'Dew Point (°C)',
+        name: 'Outdoor Dew Point',
+        series: [
+          { label: 'Outdoor Dew Point (°C)', color: colors.outdoor, full: weatherState.dew || [], val: 1 }
+        ]
+      },
+      {
+        id: 'chartCmpSoilTemp',
+        title: 'Outdoor Soil Temperature by Depth',
+        yLabel: 'Soil Temperature (°C)',
+        name: 'Outdoor Soil Temperature',
+        series: (weatherState.soilTemp || []).map((d, i) => ({
+          label: d.label + ' (°C)',
+          color: colors.soilTemp[i],
+          full: d.series,
+          val: 1
+        }))
+      },
+      {
+        id: 'chartCmpSoilMoi',
+        title: 'Outdoor Soil Moisture by Depth',
+        yLabel: 'Soil Moisture (m³/m³)',
+        name: 'Outdoor Soil Moisture',
+        series: (weatherState.soilMoi || []).map((d, i) => ({
+          label: d.label + ' (m³/m³)',
+          color: colors.soilMoi[i],
+          full: d.series,
+          val: 1
+        }))
+      }
+    ];
+
+    for (const d of defs) {
+      if (!d.series.some(s => s.full.length)) continue;
+      buildCompareChart(d.id, d.title, { name: d.name, series: d.series }, d.yLabel, wrap);
+    }
+  }
+
+  renderWeatherCharts();
+}
+/* ── Helpers ──────────────────────────────────────────────────────── */
+function esc(s) { const d = document.createElement('div'); d.textContent = String(s); return d.innerHTML; }
+function formatSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / 1048576).toFixed(1) + ' MB';
+}
+
+/* ── Auto-load embedded dataset by default ──────────────────────────
+   data.js defines window.DEFAULT_DATA (build-data.js regenerates it).
+   Plot it on startup; the upload workflow stays available for more. ── */
+(function autoLoadDefaultData() {
+  const D = window.DEFAULT_DATA;
+  if (!D || !D.meta) return;
+
+  dashboardState.data.eastGH.ambient = D.eastGH.ambient.points;
+  dashboardState.data.westGH.ambient = D.westGH.ambient.points;
+  dashboardState.data.westGH.water   = D.westGH.water.points;
+
+  const total = D.meta.totalValid + D.meta.totalFiltered;
+  for (const f of D.meta.files) {
+    dashboardState.files.uploaded.push({ name: f.file, greenhouse: '—', dataType: '—', totalRecords: f.rows, filteredRecords: f.filtered });
+    if (f.filtered > 0) {
+      dashboardState.validationLog.push({ file: f.file, row: '—', value: f.filtered + ' row(s)', reason: 'Out of sensor range' });
+    }
+  }
+  dashboardState.stats = {
+    totalValid: D.meta.totalValid,
+    totalFiltered: D.meta.totalFiltered,
+    dataQuality: total > 0 ? (D.meta.totalValid / total) * 100 : 0,
+    lastUpdated: new Date(D.meta.generated).toISOString()
+  };
+  if (D.meta.totalFiltered > 0) {
+    dashboardState.validationLog.push({
+      file: 'embedded dataset', row: '—', value: D.meta.totalFiltered + ' row(s)',
+      reason: 'Filtered before embedding (temp −40…60 °C, humidity 0…100 %, water −5…35 °C)'
+    });
+  }
+
+  renderDashboard();
+})();
+</script>
+</body>
+</html>

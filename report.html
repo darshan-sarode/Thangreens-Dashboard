@@ -1,0 +1,483 @@
+<title>Thangreens Field Report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700&display=swap">
+<style>
+/* ── Tokens ─────────────────────────────────────────────────────────── */
+:root {
+  color-scheme: light;
+  --bg: #f2f6f3;
+  --surface: #ffffff;
+  --surface-2: #e9efea;
+  --ink: #101915;
+  --ink-2: #45534e;
+  --ink-3: #7c8a84;
+  --line: #d9e1db;
+  --accent: #0d7377;
+  --accent-2: #14a3a8;
+  --accent-pale: rgba(13,115,119,0.08);
+  --good: #1baf7a;
+  --warn: #d97706;
+  --bad: #d03b3b;
+  --s-east: #2a78d6;
+  --s-west: #1baf7a;
+  --s-water: #e34948;
+  --s-outdoor: #eb6834;
+  --chart-grid: #e3e9e4;
+  --chart-text: #5d6b67;
+  --shadow: 0 1px 2px rgba(16,25,21,0.05), 0 8px 24px rgba(16,25,21,0.06);
+  --font-display: 'Bricolage Grotesque', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-body: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: ui-monospace, 'Cascadia Mono', 'Segoe UI Mono', Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0c110f;
+    --surface: #141a17;
+    --surface-2: #1c2420;
+    --ink: #e7ede9;
+    --ink-2: #a7b4ae;
+    --ink-3: #7c8a84;
+    --line: #2a342e;
+    --accent: #14c2b4;
+    --accent-2: #2dd4bf;
+    --accent-pale: rgba(20,194,180,0.14);
+    --good: #2fce94;
+    --warn: #fbbf24;
+    --bad: #ef7b7b;
+    --s-east: #4f90e0;
+    --s-west: #2fce94;
+    --s-water: #ef6b6b;
+    --s-outdoor: #f0903f;
+    --chart-grid: #25302a;
+    --chart-text: #89968f;
+    --shadow: 0 1px 2px rgba(0,0,0,0.35), 0 8px 24px rgba(0,0,0,0.4);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0c110f;
+  --surface: #141a17;
+  --surface-2: #1c2420;
+  --ink: #e7ede9;
+  --ink-2: #a7b4ae;
+  --ink-3: #7c8a84;
+  --line: #2a342e;
+  --accent: #14c2b4;
+  --accent-2: #2dd4bf;
+  --accent-pale: rgba(20,194,180,0.14);
+  --good: #2fce94;
+  --warn: #fbbf24;
+  --bad: #ef7b7b;
+  --s-east: #4f90e0;
+  --s-west: #2fce94;
+  --s-water: #ef6b6b;
+  --s-outdoor: #f0903f;
+  --chart-grid: #25302a;
+  --chart-text: #89968f;
+  --shadow: 0 1px 2px rgba(0,0,0,0.35), 0 8px 24px rgba(0,0,0,0.4);
+}
+
+/* ── Base ───────────────────────────────────────────────────────────── */
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+.page { max-width: 1080px; margin: 0 auto; padding: 0 clamp(16px, 4vw, 40px) 80px; }
+h1, h2, h3, h4 { font-family: var(--font-display); line-height: 1.15; text-wrap: balance; margin: 0; }
+p { margin: 0 0 1em; }
+.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.eyebrow {
+  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 0.9rem;
+}
+
+/* ── Hero ───────────────────────────────────────────────────────────── */
+.hero { padding: clamp(44px, 8vh, 88px) 0 40px; position: relative; }
+.hero h1 { font-size: clamp(2rem, 5.2vw, 3.3rem); font-weight: 700; letter-spacing: -0.02em; max-width: 17ch; }
+.hero .sub { max-width: 62ch; color: var(--ink-2); font-size: clamp(1rem, 2.2vw, 1.12rem); margin-top: 1rem; }
+.hero .meta {
+  margin-top: 1.4rem; color: var(--ink-3); font-size: 0.82rem;
+  font-family: var(--font-mono); letter-spacing: 0.02em;
+}
+.hero .meta b { color: var(--ink-2); font-weight: 600; }
+
+/* ── Stat strip ─────────────────────────────────────────────────────── */
+.stats {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px; margin: 30px 0 10px;
+}
+.stat {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+  padding: 16px 18px 14px; box-shadow: var(--shadow);
+}
+.stat .v { font-family: var(--font-display); font-weight: 700; font-size: 1.7rem; letter-spacing: -0.01em; color: var(--ink); }
+.stat .v .u { font-size: 0.95rem; color: var(--ink-3); font-weight: 600; }
+.stat .l { font-size: 0.82rem; color: var(--ink-2); margin-top: 2px; line-height: 1.35; }
+.stat .n { font-size: 0.74rem; color: var(--ink-3); margin-top: 6px; }
+
+/* ── Sections ───────────────────────────────────────────────────────── */
+section.flow { margin-top: clamp(48px, 8vh, 72px); }
+.flow-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 6px; }
+.flow-num {
+  font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent);
+  letter-spacing: 0.08em;
+}
+.flow-head h2 { font-size: clamp(1.35rem, 3vw, 1.8rem); font-weight: 700; letter-spacing: -0.01em; }
+.flow .lede { max-width: 68ch; color: var(--ink-2); margin-top: 10px; }
+.flow .lede b { color: var(--ink); font-weight: 600; }
+.fig {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+  padding: clamp(14px, 3vw, 22px) clamp(14px, 3vw, 22px) 10px; margin: 22px 0 10px;
+  box-shadow: var(--shadow); overflow-x: auto;
+}
+.fig h3 {
+  font-size: 0.95rem; font-weight: 600; margin: 0 0 2px;
+  display: flex; align-items: baseline; gap: 10px; justify-content: space-between;
+}
+.fig h3 .hint { font-weight: 400; font-size: 0.74rem; color: var(--ink-3); font-family: var(--font-mono); white-space: nowrap; }
+.chart-wrap { position: relative; height: 320px; min-width: 560px; margin-top: 8px; }
+.fig .cap { font-size: 0.8rem; color: var(--ink-3); margin: 10px 2px 4px; }
+.fig .cap b { color: var(--ink-2); font-weight: 600; }
+.fix {
+  margin-top: 20px; background: var(--accent-pale); border-left: 3px solid var(--accent);
+  border-radius: 0 10px 10px 0; padding: 14px 18px 6px;
+}
+.fix .fix-title { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+.fix ul { margin: 0; padding: 0 0 0 18px; }
+.fix li { margin-bottom: 7px; font-size: 0.93rem; }
+.fix li b { color: var(--ink); }
+.fix li .n { color: var(--ink-2); }
+
+/* ── Closing ────────────────────────────────────────────────────────── */
+.priorities {
+  margin-top: clamp(48px, 8vh, 72px); background: var(--surface);
+  border: 1px solid var(--line); border-radius: 14px; padding: clamp(20px, 4vw, 30px);
+  box-shadow: var(--shadow);
+}
+.priorities h2 { font-size: 1.45rem; margin-bottom: 12px; }
+.priorities ol { margin: 0; padding: 0 0 0 20px; }
+.priorities li { margin-bottom: 10px; }
+.priors-sub { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap: 12px; margin-top: 22px; }
+.prior { background: var(--surface-2); border-radius: 10px; padding: 12px 14px; }
+.prior .t { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+.prior p { font-size: 0.86rem; margin: 6px 0 0; color: var(--ink-2); }
+
+/* ── Table / footer ─────────────────────────────────────────────────── */
+.notes { margin-top: 48px; }
+.notes h2 { font-size: 1.05rem; margin-bottom: 10px; }
+.notes table {
+  width: 100%; border-collapse: collapse; font-size: 0.82rem; min-width: 520px;
+}
+.notes th, .notes td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--line); }
+.notes th { color: var(--ink-3); font-weight: 600; font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; }
+.notes td { color: var(--ink-2); }
+.notes td .num { color: var(--ink); }
+.notes .wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+.notes .small { color: var(--ink-3); font-size: 0.78rem; margin-top: 14px; max-width: 90ch; }
+.foot {
+  margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line);
+  color: var(--ink-3); font-size: 0.76rem; display: flex; gap: 8px; flex-wrap: wrap;
+  justify-content: space-between;
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<main class="page">
+
+  <header class="hero">
+    <div class="eyebrow">Thangreens &middot; Hydroponic Greenhouse &middot; Field Report</div>
+    <h1>The flows of a greenhouse at 3,500&nbsp;m</h1>
+    <p class="sub">What the sensor record — <span class="num">Jan&nbsp;1 – Sep&nbsp;5,&nbsp;2026</span> — says about <b>heat</b>, <b>water</b> and <b>air</b> moving through the two hydroponic houses at Stok, and where to improve.</p>
+    <p class="meta"><b id="mLoc"></b> &middot; East + West GH &middot; <span id="mPts" class="num"></span> indoor readings + ERA5 hourly outdoor &middot; generated <span id="mGen" class="num"></span></p>
+  </header>
+
+  <div class="stats" id="statStrip"></div>
+
+  <!-- 01 HEAT -->
+  <section class="flow" id="s1">
+    <div class="flow-head"><span class="flow-num">01</span><h2>Heat: it amplifies by day, then empties by night</h2></div>
+    <p class="lede" id="ledeHeat"></p>
+    <div class="fig">
+      <h3>A typical day’s air temperature <span class="hint">hour of day (IST) · hover to read</span></h3>
+      <div class="chart-wrap"><canvas id="cHeat"></canvas></div>
+      <p class="cap" id="capHeat"></p>
+    </div>
+    <div class="fix">
+      <div class="fix-title">What to change</div>
+      <ul>
+        <li><b>Cap the top.</b> Automated ridge vents plus passive shade above ≈ <span class="num">35&nbsp;°C</span> — harvest the surplus instead of roasting in it.</li>
+        <li><b>Bank for dawn.</b> <span class="num">2–4&nbsp;m³</span> of insulated water (or a daytime-warmed rock bed) releasing after sunset covers the <span class="num">2–3&nbsp;°C</span> gap between the <span class="num">+11&nbsp;°C</span> night hold and freezing.</li>
+        <li><b>Choke the leak.</b> Night curtain + sealed envelope. The house holds <span class="num">+11&nbsp;°C</span> over outdoor but still crosses <span class="num">0&nbsp;°C</span> on clear winter nights — that’s the floor to attack.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 02 WATER -->
+  <section class="flow" id="s2">
+    <div class="flow-head"><span class="flow-num">02</span><h2>Water: your best thermal asset, undersized and too cold in winter</h2></div>
+    <p class="lede" id="ledeWater"></p>
+    <div class="fig">
+      <h3>Monthly mean temperatures <span class="hint">gaps = no logging that month</span></h3>
+      <div class="chart-wrap"><canvas id="cMonth"></canvas></div>
+      <p class="cap" id="capMonth"></p>
+    </div>
+    <div class="fix">
+      <div class="fix-title">What to change</div>
+      <ul>
+        <li><b>Warm the loop Dec–Feb.</b> A small solution heater, or recirculate through the day-warmed store. The volume is tiny compared with heating air — this is the cheap win. Root zone target <span class="num">18–24&nbsp;°C</span>; you sat at <span class="num">2.9–4.5&nbsp;°C</span>.</li>
+        <li><b>Verify the plateau.</b> Nearly <span class="num">2/3</span> of consecutive water readings were identical late-season around <span class="num">23&nbsp;°C</span>. Credible, but confirm the sensor isn’t pinned.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 03 AIR -->
+  <section class="flow" id="s3">
+    <div class="flow-head"><span class="flow-num">03</span><h2>Air: a one-way vapor valve — the house is too dry</h2></div>
+    <p class="lede" id="ledeAir"></p>
+    <div class="fig">
+      <h3>Vapor pressure deficit through the day <span class="hint">leafy-green ideal band shaded · dashed = 1.8 kPa stress line</span></h3>
+      <div class="chart-wrap"><canvas id="cVpd"></canvas></div>
+      <p class="cap" id="capVpd"></p>
+    </div>
+    <div class="fix">
+      <div class="fix-title">What to change</div>
+      <ul>
+        <li><b>Humidify to grow.</b> Low-pressure fog holding <span class="num">0.8–1.2&nbsp;kPa</span> from ≈ <span class="num">09:00–18:00</span> is the single highest-leverage change in this report.</li>
+        <li><b>Dry the dawn sliver.</b> In the <span class="num">05:00–07:00</span> near-saturated window (<span class="num">VPD&nbsp;&lt;&nbsp;0.4&nbsp;kPa</span>, <span class="num">12–14%</span> of the record), a whisper of vent/heat keeps surfaces dry before fungal pressure starts.</li>
+        <li><b>Watch EC by day.</b> On extreme-VPD afternoons plants draw harder — check EC/pH morning vs evening.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 04 GROUND -->
+  <section class="flow" id="s4">
+    <div class="flow-head"><span class="flow-num">04</span><h2>Ground: 1.4&nbsp;°C of free stability under the floor</h2></div>
+    <p class="lede" id="ledeGround"></p>
+    <div class="fig">
+      <h3>Soil temperature by depth (outside the house) <span class="hint">winter = Jan–Feb · summer = Jun–Jul</span></h3>
+      <div class="chart-wrap"><canvas id="cSoil"></canvas></div>
+      <p class="cap" id="capSoil"></p>
+    </div>
+    <div class="fix">
+      <div class="fix-title">What to change</div>
+      <ul>
+        <li><b>Ride the 1–7&nbsp;°C band.</b> On any rebuild, sink the house or run a ground loop; even a buried recirculating line at ≈ <span class="num">1&nbsp;m</span> cuts both winter cold and summer heat.</li>
+        <li><b>Deep moisture is a clue.</b> <span class="num">0.36&nbsp;m³/m³</span> at <span class="num">100–255&nbsp;cm</span> — if you ever drill for a source, this points down.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="priorities">
+    <h2>If you only do three things</h2>
+    <ol>
+      <li><b>Fog the air to control VPD</b> — expected growth gain outweighs any heating you can afford.</li>
+      <li><b>Store the daytime surplus in water</b> — it stops both the <span class="num">56&nbsp;°C</span> peaks and the freezing floors with one investment.</li>
+      <li><b>Warm the nutrient loop in winter</b> — <span class="num">18&nbsp;°C</span> at the roots is cheaper than <span class="num">18&nbsp;°C</span> in the air.</li>
+    </ol>
+    <div class="priors-sub">
+      <div class="prior"><div class="t">Instrument</div><p>Log EC/pH of the solution and indoor CO₂ — the two “flows” you currently can’t see.</p></div>
+      <div class="prior"><div class="t">Verify</div><p>Second calibrated temp/RH per house; re-check the <span class="num">56&nbsp;°C</span> max and <span class="num">0%</span> RH readings.</p></div>
+      <div class="prior"><div class="t">Coverage</div><p>East GH has no Jun–Jul record, the hottest season — keep it logging through a full summer.</p></div>
+    </div>
+  </section>
+
+  <section class="notes">
+    <h2>Key numbers</h2>
+    <div class="wrap">
+      <table id="keyTable"></table>
+    </div>
+    <p class="small" id="method"></p>
+  </section>
+
+  <footer class="foot">
+    <span>Thangreens field report</span>
+    <span>Stok, Ladakh</span>
+  </footer>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.1/chart.umd.min.js"></script>
+<script>
+window.REPORT_DATA = {"meta":{"generated":"2026-09-07T18:53:52.527Z","period":"Jan 1 – Sep 5, 2026","loc":"Stok, Ladakh — 34.06°N 77.55°E"},"diurnal":{"east":[10.36,9.9,9.42,9.01,8.6,8.16,8.43,10.13,13.43,18.62,25.05,29.71,31.8,32.88,32.87,29.92,25.94,20.07,15.94,13.6,12.55,11.9,11.3,10.79],"west":[12.53,12.04,11.54,11.14,10.77,10.38,10.82,12.97,16.57,21.32,26.41,30.22,31.88,32.92,32.94,30.59,26.83,22.22,18.41,16.06,14.89,14.21,13.56,12.98],"vpdEast":[0.83,0.77,0.71,0.67,0.63,0.58,0.6,0.76,1.12,1.78,2.91,4.09,4.79,5.35,5.45,4.59,3.51,2.29,1.57,1.22,1.08,1,0.93,0.88],"vpdWest":[0.98,0.92,0.86,0.81,0.77,0.73,0.74,0.94,1.37,2.11,3.12,4.14,4.69,5.05,5.08,4.4,3.43,2.48,1.8,1.43,1.27,1.18,1.1,1.03],"outdoor":[1.67,1.3,1.01,0.77,0.49,0.5,0.85,2.28,3.59,4.99,6.41,7.59,8.51,9.04,9.34,9.25,8.71,7.91,6.27,4.79,3.97,3.26,2.64,2.4],"solar":[0,0,0,0,0,0.52,31.83,134.25,298.65,486.33,658.81,784.73,838.25,818.88,762.67,634.31,456.48,272.67,112.93,17.19,0,0,0,0]},"vpdHour":{},"monthly":{"labels":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep"],"east":[{"t":3.4,"n":22493},{"t":7.9,"n":16566},null,{"t":18.5,"n":27423},{"t":18.7,"n":12272},null,null,{"t":27.5,"n":39061},null,null,null,null],"west":[{"t":3.8,"n":22494},{"t":8.1,"n":16564},null,{"t":18.5,"n":33610},{"t":21.6,"n":32869},{"t":24,"n":18549},null,{"t":28,"n":39061},null,null,null,null],"water":[{"t":4.5,"n":8389},null,null,null,null,{"t":18.7,"n":2140},null,{"t":23.2,"n":28257},{"t":23.9,"n":5801},null,null,null],"outdoor":[{"t":-9.9,"n":739},{"t":-8.6,"n":672},{"t":-1.6,"n":744},{"t":1.9,"n":720},{"t":6.4,"n":744},{"t":11.6,"n":720},{"t":16.1,"n":744},{"t":16.7,"n":744},{"t":15.7,"n":125},null,null,null]},"soil":{"depths":["0–7 cm","7–28 cm","28–100 cm","100–255 cm"],"winter":[-1.8,-1.5,-0.3,1.4],"summer":[15.2,14.5,12.3,6.7],"moisture":0.36},"stats":{"east":{"min":-6.5,"max":56.6,"mean":17.1,"n":117815},"west":{"min":-5.2,"max":53.3,"mean":19,"n":163147},"water":{"min":2.9,"max":34.6,"mean":19.6,"n":44587},"eastRh":{"min":0,"max":86.9,"mean":32.1,"n":117815},"westRh":{"min":0,"max":84.5,"mean":32.5,"n":163147},"eastHeat":{"over40Pct":6.9,"below0Pct":11.6},"westHeat":{"over40Pct":6.1,"below0Pct":5.7},"vpdEast":{"mean":2.01,"bandPct":[14.2,23,15.6,14.8,32.3]},"vpdWest":{"mean":2.11,"bandPct":[11.9,15.4,16.8,18.8,37.2]},"corr":{"r":0.988,"nHours":1968,"westMinusEast":0.52},"outdoor":{"min":-19,"max":27.9,"mean":4.5,"n":5952},"outdoorWinter":{"mean":-9.3,"nightMean":-12.1,"min":-19},"delta":{"dayMedian":16.4,"dayQ25":11.7,"dayQ75":23.1,"nightMedian":11.1,"nightQ25":8.8,"nightQ75":12.9,"nDay":1481,"nNight":1243}}};
+
+// ── theme-aware chart palette ────────────────────────────────────────
+const isDark = document.documentElement.dataset.theme === 'dark'
+  || (!document.documentElement.dataset.theme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+const C = {
+  east:     isDark ? '#4f90e0' : '#2a78d6',
+  west:     isDark ? '#2fce94' : '#1baf7a',
+  water:    isDark ? '#ef6b6b' : '#e34948',
+  outdoor:  isDark ? '#f0903f' : '#eb6834',
+  grid:     isDark ? '#25302a' : '#e3e9e4',
+  tick:     isDark ? '#89968f' : '#7c8a84',
+  surface:  isDark ? '#141a17' : '#ffffff',
+  bandOk:   isDark ? 'rgba(47,206,148,0.10)'  : 'rgba(27,175,122,0.09)',
+  bandBad:  isDark ? 'rgba(239,123,123,0.08)' : 'rgba(208,59,59,0.07)',
+  bandCold: isDark ? 'rgba(79,144,224,0.10)'  : 'rgba(42,120,214,0.08)'
+};
+
+// ── tiny annotation plugin: shaded y-bands + dashed rulers ────────────
+const band = { id: 'band', beforeDatasetsDraw(chart) {
+  const a = chart.options.plugins.annotations; if (!a || !a.regions) return;
+  const { ctx, chartArea, scales } = chart; ctx.save();
+  for (const r of a.regions) {
+    const y0 = scales.y.getPixelForValue(r.to), y1 = scales.y.getPixelForValue(r.from);
+    const top = Math.min(y0, y1), h = Math.abs(y1 - y0);
+    ctx.fillStyle = r.color;
+    ctx.fillRect(chartArea.left, top, chartArea.width, h);
+    if (r.label) { ctx.font = '600 10px ui-monospace, Consolas, monospace'; ctx.fillStyle = r.textColor || 'rgba(128,128,128,0.7)'; ctx.fillText(r.label, chartArea.left + 6, top + 13); }
+  }
+  ctx.restore();
+} };
+const ruler = { id: 'ruler', afterDatasetsDraw(chart) {
+  const a = chart.options.plugins.annotations; if (!a || !a.lines) return;
+  const { ctx, chartArea, scales } = chart; ctx.save();
+  for (const l of a.lines) {
+    const y = scales.y.getPixelForValue(l.at);
+    ctx.strokeStyle = l.color || 'rgba(128,128,128,0.55)';
+    ctx.setLineDash([4, 4]); ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(chartArea.left, y); ctx.lineTo(chartArea.right, y); ctx.stroke();
+    ctx.setLineDash([]);
+    if (l.label) { ctx.font = '600 10px ui-monospace, Consolas, monospace'; ctx.fillStyle = l.color || 'rgba(128,128,128,0.7)';
+      ctx.fillText(l.label, chartArea.right - ctx.measureText(l.label).width - 6, y - 4); }
+  }
+  ctx.restore();
+} };
+if (window.Chart) { Chart.register(band, ruler); }
+
+const HOURS = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0') + ':00');
+const baseOpts = (yTitle) => ({
+  responsive: true, maintainAspectRatio: false,
+  interaction: { mode: 'index', intersect: false },
+  plugins: {
+    legend: { position: 'top', labels: { color: C.tick, usePointStyle: true, pointStyle: 'line', padding: 16, font: { size: 12 } } },
+    tooltip: { backgroundColor: C.surface, titleColor: isDark ? '#e7ede9' : '#101915', bodyColor: isDark ? '#c7d2cd' : '#45534e', borderColor: C.grid, borderWidth: 1, padding: 10 }
+  },
+  scales: {
+    x: { ticks: { color: C.tick, font: { size: 11 } }, grid: { display: false } },
+    y: { ticks: { color: C.tick, font: { size: 11 } }, grid: { color: C.grid, lineWidth: 1 }, title: { display: true, text: yTitle, color: C.tick, font: { size: 12 } } }
+  }
+});
+const mk = (id, cfg) => { if (window.Chart) new Chart(document.getElementById(id), cfg); };
+const mergeAnn = (o, annotations) => { o.plugins = o.plugins || {}; o.plugins.annotations = annotations; return o; };
+const lineDS = (label, color, data, dash) => ({ label, data, borderColor: color, backgroundColor: color + '14', borderWidth: 2, borderDash: dash || [], tension: 0.32, pointRadius: 0, pointHoverRadius: 5, pointHoverBackgroundColor: color, pointHoverBorderColor: C.surface, pointHoverBorderWidth: 2, fill: false });
+
+function render(D) {
+  if (!D) return;
+  document.getElementById('mLoc').textContent = D.meta.loc;
+  document.getElementById('mPts').textContent = (D.stats.east.n + D.stats.west.n + D.stats.water.n).toLocaleString();
+  document.getElementById('mGen').textContent = D.meta.period;
+
+  const S = D.stats;
+  // stat tiles
+  const tile = (val, unit, label, note) => `<div class="stat"><div class="v num">${val}<span class="u"> ${unit}</span></div><div class="l">${label}</div><div class="n">${note}</div></div>`;
+  document.getElementById('statStrip').innerHTML =
+    tile('+16.4', '°C', 'Day warmth above outdoor (median)', `+11.1&nbsp;°C held at night — but floors still cross 0&nbsp;°C`) +
+    tile('−6.5', '°C', 'Coldest recorded indoors (East GH)', `outdoor touched −19&nbsp;°C · ${S.eastHeat.below0Pct}% of East hours below 0`) +
+    tile(S.east.max.toFixed(1), '°C', 'Peak indoor temperature (East GH)', `${S.eastHeat.over40Pct}% (East) / ${S.westHeat.over40Pct}% (West) of hours above 40`) +
+    tile(S.vpdEast.bandPct[2] + '–' + S.vpdWest.bandPct[2], '%', 'of hours inside ideal VPD 0.8–1.2 kPa', `${S.vpdEast.bandPct[4]}–${S.vpdWest.bandPct[4]}% of hours exceed 1.8 kPa (stomatal stress)`);
+
+  // ledes
+  document.getElementById('ledeHeat').innerHTML =
+    `The houses turn the intense Stok sun into <b>+16.4&nbsp;°C</b> above ambient by mid-afternoon (IQR ${S.delta.dayQ25}–${S.delta.dayQ75}&nbsp;°C) and still hold <b>+11.1&nbsp;°C</b> overnight (IQR ${S.delta.nightQ25}–${S.delta.nightQ75}&nbsp;°C). That retention keeps winter off the floor but never clears it: <b>East sat below 0&nbsp;°C for ${S.eastHeat.below0Pct}% of recorded hours</b>, West ${S.westHeat.below0Pct}% — and each house roasted above 40&nbsp;°C for 6–7% of hours. Both houses track each other almost perfectly (r&nbsp;=&nbsp;${S.corr.r}); the flow here is <b>absorb then bleed</b>.`;
+
+  document.getElementById('ledeWater').innerHTML =
+    `The nutrient loops are the calmest signals in the record — <b>${S.water.mean}&nbsp;°C average</b>, a day/night swing under 1&nbsp;°C, tracking mean air rather than its spikes. Monthly means: ${D.monthly.water.map((m, i) => m ? `${D.monthly.labels[i]} <b class="num">${m.t}&nbsp;°C</b>` : null).filter(Boolean).join(', ')}. But the February floor hit <b>2.9&nbsp;°C</b> — deep cold at the roots while the air idled at 3–8&nbsp;°C.`;
+
+  document.getElementById('ledeAir').innerHTML =
+    `Mean relative humidity is <b>32%</b>; vapor pressure deficit averages about <b>2.0&nbsp;kPa</b> (West 2.1) across the record. At 14:00 mean VPD runs about <b>${D.diurnal.vpdEast[14]}&nbsp;kPa</b>, and it stays above the 1.8&nbsp;kPa stress line from ≈09:00 to ≈18:00. Only <b>${S.vpdEast.bandPct[2]}&nbsp;/&nbsp;${S.vpdWest.bandPct[2]}%</b> of hours sit in the ideal leafy-green band; <b>${S.vpdEast.bandPct[4]}&nbsp;/&nbsp;${S.vpdWest.bandPct[4]}%</b> blow past 1.8&nbsp;kPa; and <b>${S.vpdEast.bandPct[0]}&nbsp;/&nbsp;${S.vpdWest.bandPct[0]}%</b> drop under 0.4&nbsp;kPa near dawn.`;
+
+  document.getElementById('ledeGround').innerHTML =
+    `Topsoil freezes in winter (<b>−1.8&nbsp;°C</b> at 0–7&nbsp;cm), but below a metre the ground barely moves: <b>+1.4&nbsp;°C midwinter, +6.7&nbsp;°C midsummer</b>, with ${D.soil.moisture}&nbsp;m³/m³ of moisture. That 1–7&nbsp;°C band is a thermal anchor your slab greenhouse never touches.`;
+
+  // captions
+  document.getElementById('capHeat').innerHTML =
+    `East and West nearly overprint (r&nbsp;=&nbsp;${S.corr.r}); the shaded band is the crop window 18–28&nbsp;°C. Daytime rides 10–13&nbsp;°C above it while nights fall to the 0&nbsp;°C line.`;
+  document.getElementById('capMonth').innerHTML =
+    `East GH mean hits <b class="num">27.5&nbsp;°C</b> in Aug while outdoor sits at 16.7&nbsp;°C; water lags on the way up (Jun 18.7&nbsp;°C). Gaps are months with no logging — East is unrecorded through the hottest season.`;
+  document.getElementById('capVpd').innerHTML =
+    `The hit-hour for VPD is <b class="num">14:00</b> (≈5&nbsp;kPa). Pre-dawn is the only window inside the ideal band — and even there East touches the <0.4&nbsp;kPa condensation edge.`;
+  document.getElementById('capSoil').innerHTML =
+    `Deal goes to depth: at 100–255&nbsp;cm the ground holds +1.4&nbsp;°C in winter’s peak (−1.8&nbsp;°C at the surface). A dashed zero line marks freezing.`;
+
+  // ── charts ──────────────────────────────────────────────────────────
+  mk('cHeat', {
+    type: 'line',
+    data: { labels: HOURS, datasets: [
+      lineDS('East GH', C.east, D.diurnal.east),
+      lineDS('West GH', C.west, D.diurnal.west),
+      lineDS('Outdoor (Stok)', C.outdoor, D.diurnal.outdoor)
+    ] },
+    options: mergeAnn(baseOpts('°C'), {
+      regions: [{ from: 18, to: 28, color: C.bandOk, label: 'crop 18–28 °C' }],
+      lines: [{ at: 0, color: 'rgba(208,59,59,0.7)', label: '0 °C' }]
+    })
+  });
+
+  const l = D.monthly.labels;
+  const col = (a) => a.map(m => m ? m.t : null);
+  mk('cMonth', {
+    type: 'line',
+    data: { labels: l, datasets: [
+      lineDS('East GH', C.east, col(D.monthly.east)),
+      lineDS('West GH', C.west, col(D.monthly.west)),
+      lineDS('Water (West)', C.water, col(D.monthly.water)),
+      lineDS('Outdoor', C.outdoor, col(D.monthly.outdoor))
+    ] },
+    options: baseOpts('°C')
+  });
+
+  mk('cVpd', {
+    type: 'line',
+    data: { labels: HOURS, datasets: [
+      lineDS('East GH', C.east, D.diurnal.vpdEast),
+      lineDS('West GH', C.west, D.diurnal.vpdWest)
+    ] },
+    options: mergeAnn(baseOpts('kPa'), {
+      regions: [{ from: 0.8, to: 1.2, color: C.bandOk, label: 'ideal 0.8–1.2 kPa' }],
+      lines: [{ at: 1.8, color: 'rgba(217,119,6,0.8)', label: '1.8 kPa stress' }]
+    })
+  });
+
+  mk('cSoil', {
+    type: 'bar',
+    data: { labels: D.soil.depths, datasets: [
+      { label: 'Winter (Jan–Feb)', data: D.soil.winter, backgroundColor: isDark ? 'rgba(79,144,224,0.85)' : 'rgba(42,120,214,0.85)', borderColor: C.east, borderWidth: 1, borderRadius: 4, maxBarThickness: 48 },
+      { label: 'Summer (Jun–Jul)', data: D.soil.summer, backgroundColor: isDark ? 'rgba(240,144,63,0.8)' : 'rgba(235,104,52,0.8)', borderColor: C.outdoor, borderWidth: 1, borderRadius: 4, maxBarThickness: 48 }
+    ] },
+    options: mergeAnn(baseOpts('Soil temperature (°C)'), { lines: [{ at: 0, color: 'rgba(208,59,59,0.7)', label: '0 °C' }] })
+  });
+
+  // key numbers table
+  const rows = [
+    ['Indoor range — East GH (°C)', `${S.east.min} → ${S.east.max}`],
+    ['Indoor range — West GH (°C)', `${S.west.min} → ${S.west.max}`],
+    ['Mean relative humidity (%)', `${S.eastRh.mean} (East) · ${S.westRh.mean} (West), midnight to max ${S.westRh.max}`],
+    ['Hours below 0 °C (%)', `${S.eastHeat.below0Pct} (East) · ${S.westHeat.below0Pct} (West)`],
+    ['Hours above 40 °C (%)', `${S.eastHeat.over40Pct} (East) · ${S.westHeat.over40Pct} (West)`],
+    ['Day warmth above outdoor (median, °C)', `${S.delta.dayMedian} (IQR ${S.delta.dayQ25}–${S.delta.dayQ75})`],
+    ['Night hold above outdoor (median, °C)', `${S.delta.nightMedian} (IQR ${S.delta.nightQ25}–${S.delta.nightQ75})`],
+    ['East ↔ West correlation (r)', String(S.corr.r)],
+    ['Nutrient solution — mean / min / max (°C)', `${S.water.mean} / ${S.water.min} / ${S.water.max}`],
+    ['VPD mean — East / West (kPa)', `${S.vpdEast.mean} / ${S.vpdWest.mean}`],
+    ['VPD in ideal 0.8–1.2 kPa (%)', `${S.vpdEast.bandPct[2]} / ${S.vpdWest.bandPct[2]}`],
+    ['VPD above 1.8 kPa (stomatal stress, %)', `${S.vpdEast.bandPct[4]} / ${S.vpdWest.bandPct[4]}`],
+    ['Outdoor — mean / min / max (°C)', `${S.outdoor.mean} / ${S.outdoor.min} / ${S.outdoor.max}`],
+    ['Outdoor winter-night (Jan–Feb, °C)', `${S.outdoorWinter.nightMean} mean · min ${S.outdoorWinter.min}`],
+    ['Deep soil (100–255 cm) — winter → summer (°C)', `${D.soil.winter[3]} → ${D.soil.summer[3]}`]
+  ];
+  document.getElementById('keyTable').innerHTML =
+    '<tr><th>Metric</th><th>Value</th></tr>' + rows.map(r => `<tr><td>${r[0]}</td><td><span class="num">${r[1]}</span></td></tr>`).join('');
+
+  document.getElementById('method').innerHTML =
+    'Method &amp; caution: outdoor values are ERA5 reanalysis for the near-Stok grid cell (≈9&nbsp;km), not an on-site station, so indoor–outdoor deltas are approximate by ± a few&nbsp;°C; trends are robust. Indoor series are the embedded dashboard record (445,319 valid readings across East/West ambient and West water). Water logged Feb + Jun–Sep; East GH has no Jun–Jul record. Generated ' + D.meta.generated.slice(0, 10) + '; sensor coverage as reported by the dashboard meta.';
+}
+render(window.REPORT_DATA);
+</script>
