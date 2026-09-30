@@ -780,6 +780,7 @@ a { color: var(--accent); text-decoration: none; }
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
+
 <!-- ═══════════════════════ JAVASCRIPT ══════════════════════════════ -->
 <script>
 
@@ -1273,8 +1274,8 @@ let dataBounds = { min: null, max: null };
 
 /* ── Outdoor weather (Open-Meteo historical archive) state ─────────── */
 const WEATHER_LOC = { name: 'Stok, Ladakh, India', lat: 34.0644, lon: 77.5533 };
-const OM_START = '2026-01-01';   // historical range covering the embedded sensor record
-const OM_END   = '2026-09-05';
+const OM_START = '2025-09-01';   // historical range covering the embedded sensor record (includes Sep 2025 water data)
+const OM_END   = (() => { const d = new Date(); d.setDate(d.getDate() - 1); return d.toISOString().slice(0, 10); })();
 const weatherState = { current: null, series: [], raw: null, status: '', error: null, fetched: false };
 
 const allSeries = () => {

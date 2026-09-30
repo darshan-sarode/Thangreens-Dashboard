@@ -15,6 +15,7 @@ const fs = require("fs");
 const path = require("path");
 
 const DATA_DIR = "C:\\Users\\darsh\\Downloads\\Thangreens\\data\\";
+const DATA_DIR2 = "C:\\Users\\darsh\\Downloads\\tgh\\";
 const OUT_FILE = path.join(__dirname, "data.js");
 
 const MAX_POINTS_PER_SERIES = 2000;
@@ -44,9 +45,14 @@ const FILES = [
   { name: "thaangreens_east_gh 2026-05-18 19_22_21 IST (Data IST).csv",      gh: "eastGH", type: "ambient" },
   { name: "thaangreens_east_gh 2026-05-26 17_12_36 IST (Data IST).csv",      gh: "eastGH", type: "ambient" },
   { name: "thaangreens_east_gh 2026-09-01 19_08_27 IST (Data IST).csv",      gh: "eastGH", type: "ambient" },
+  // East GH ambient (Sep 2026)
+  { name: "thaangreens_east_gh 2026-09-26 17_15_32 IST (Data IST).csv", gh: "eastGH", type: "ambient", dir: DATA_DIR2 },
+  // West GH ambient (Sep 2026)
+  { name: "thaangreens_west_gh 2026-09-26 17_08_13 IST (Data IST).csv", gh: "westGH", type: "ambient", dir: DATA_DIR2 },
   // West GH water
   { name: "Thangsgreen_West_GH_water-ambient.csv", gh: "westGH", type: "water" },
   { name: "water_west.csv",                        gh: "westGH", type: "water" },
+  { name: "water_west(2).csv",                     gh: "westGH", type: "water", dir: DATA_DIR2 },
 ];
 
 /* ── Decode file with encoding fallback ────────────────────────────── */
@@ -131,7 +137,14 @@ function detectCols(headers) {
   const tempCol = find(["temperature", "ambient_temp", "ambienttemp", "ambient_c", "ambientc", "temp"]);
   const humCol = find(["humidity", "hum", "rh"]);
   const waterCol = find(["water"]);
-  return { tsCol, tempCol, humCol, waterCol };
+  // Second water column (e.g. WaterTemp2_C): search from waterCol+1 onwards
+  let waterCol2 = -1;
+  if (waterCol >= 0) {
+    for (let i = waterCol + 1; i < h.length; i++) {
+      if (h[i].includes("water")) { waterCol2 = i; break; }
+    }
+  }
+  return { tsCol, tempCol, humCol, waterCol, waterCol2 };
 }
 
 function inRange(v, [lo, hi]) {
@@ -177,7 +190,7 @@ const fileMeta = [];
 const perFile = [];
 
 for (const cfg of FILES) {
-  const file = path.join(DATA_DIR, cfg.name);
+  const file = path.join(cfg.dir || DATA_DIR, cfg.name);
   if (!fs.existsSync(file)) {
     console.error("MISSING:", cfg.name);
     continue;
@@ -187,7 +200,7 @@ for (const cfg of FILES) {
   if (!rows.length) { console.error("EMPTY:", cfg.name); continue; }
 
   const headers = rows[0];
-  const { tsCol, tempCol, humCol, waterCol } = detectCols(headers);
+  const { tsCol, tempCol, humCol, waterCol, waterCol2 } = detectCols(headers);
   const records = { file: cfg.name, rows: rows.length - 1, valid: 0, filtered: 0, first: null, last: null };
   const target = series[cfg.gh][cfg.type];
 
@@ -224,9 +237,17 @@ for (const cfg of FILES) {
         else if (!isNaN(hum) && !inRange(hum, RANGES.humidity)) { ok = false; issue = "humidity out of range"; }
         else target.points.push([ts, temp, isNaN(hum) ? null : hum]);
       } else {
-        wt = parseFloat(r[waterCol >= 0 ? waterCol : -1]);
+        const wt1 = parseFloat(r[waterCol >= 0 ? waterCol : -1]);
+        const wt2 = waterCol2 >= 0 ? parseFloat(r[waterCol2]) : NaN;
+        // Use average of both sensors when both are valid; otherwise whichever is valid
+        let wt;
+        const v1 = !isNaN(wt1) && inRange(wt1, RANGES.waterTemp);
+        const v2 = !isNaN(wt2) && inRange(wt2, RANGES.waterTemp);
+        if (v1 && v2) wt = (wt1 + wt2) / 2;
+        else if (v1)  wt = wt1;
+        else if (v2)  wt = wt2;
+        else          wt = NaN;
         if (isNaN(wt)) { ok = false; issue = "missing water temp"; }
-        else if (!inRange(wt, RANGES.waterTemp)) { ok = false; issue = "water temp out of range"; }
         else target.points.push([ts, wt]);
       }
     }
