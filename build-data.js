@@ -53,6 +53,7 @@ const FILES = [
   { name: "Thangsgreen_West_GH_water-ambient.csv", gh: "westGH", type: "water" },
   { name: "water_west.csv",                        gh: "westGH", type: "water" },
   { name: "water_west(2).csv",                     gh: "westGH", type: "water", dir: DATA_DIR2 },
+  { name: "water_west_2_.csv",                     gh: "westGH", type: "water", dir: DATA_DIR2 },
 ];
 
 /* ── Decode file with encoding fallback ────────────────────────────── */
